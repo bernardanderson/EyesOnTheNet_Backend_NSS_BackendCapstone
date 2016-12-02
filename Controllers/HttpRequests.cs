@@ -6,7 +6,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
-namespace eyesonthenet.Controllers
+namespace EyesOnTheNet.Controllers
 {
     public class HttpCameraAccess
     {

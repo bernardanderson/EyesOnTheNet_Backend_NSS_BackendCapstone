@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace eyesonthenet.Models
+namespace EyesOnTheNet.Models
 {
     public class Users
     {

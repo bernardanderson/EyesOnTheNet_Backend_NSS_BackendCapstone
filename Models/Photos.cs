@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace eyesonthenet.Models
+namespace EyesOnTheNet.Models
 {
     public class Photos
     {
@@ -14,6 +14,5 @@ namespace eyesonthenet.Models
         public string FileLocation{ get; set; }
         public DateTime CreationDate { get; set; }
         public Cameras CameraId { get; set; }
-
     }
 }
