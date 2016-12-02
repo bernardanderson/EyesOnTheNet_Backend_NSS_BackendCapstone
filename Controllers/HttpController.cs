@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace eyesonthenet.Controllers
 {
@@ -11,16 +12,25 @@ namespace eyesonthenet.Controllers
     {
         // GET api/http
         [HttpGet]
-        public IEnumerable<string> Get()
+        public Task<Stream> Get()
         {
-            return new string[] { "value1", "value2" };
+            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
+
+            return currentCameraAccess.GetSnapshot();
         }
 
         // GET api/http/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Task<Stream> Get(int id)
         {
-            return "value";
+            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
+
+            if (id == 1)
+            {
+                return currentCameraAccess.GetParameters();
+            }
+
+            return null;
         }
 
         // POST api/http
