@@ -11,18 +11,14 @@ namespace eyesonthenet.Models
     {
         [Key]
         public int UserId { get; set; }
-
-        [Required, MaxLength(16)]
+        [Required, MinLength(4), MaxLength(16)]
         public string Username { get; set; }
-
         [Required, MinLength(8)]
         public string Password { get; set; }
-
         [Required]
         public string Email { get; set; }
-
-        public DateTime RegDate { get; set; }
-
+        public DateTime RegistrationDate { get; set; }
+        public DateTime LastLoginDate { get; set; }
         public List<Cameras> CameraList { get; set; }
     }
 }
