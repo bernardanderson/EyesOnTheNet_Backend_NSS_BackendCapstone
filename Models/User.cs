@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EyesOnTheNet.Models
 {
-    public class Users
+    public class User
     {
         [Key]
         public int UserId { get; set; }

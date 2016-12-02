@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EyesOnTheNet.Models
 {
-    public class Photos
+    public class Photo
     {
         [Key]
         public int PhotoId { get; set; }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EyesOnTheNet.Models
 {
-    public class Cameras
+    public class Camera
     {
         [Key]
         public int CameraId { get; set; }
@@ -18,6 +18,6 @@ namespace EyesOnTheNet.Models
         public string LoginName { get; set; }
         public string LoginPass { get; set; }
         public bool Private { get; set; }
-        public Users CreatedBy { get; set; }
+        public User CreatedBy { get; set; }
     }
 }

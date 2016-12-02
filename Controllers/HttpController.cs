@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
-namespace eyesonthenet.Controllers
+namespace EyesOnTheNet.Controllers
 {
     [Route("api/[controller]")]
     public class HttpController : Controller
