@@ -28,10 +28,7 @@ namespace EyesOnTheNet.Controllers
         {
             HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd=");
 
-            response.Headers.Add("Content-Type", "image/jpeg");
-
             var stringedResponse = await response.Content.ReadAsStreamAsync();
-
 
             return stringedResponse;
         }
