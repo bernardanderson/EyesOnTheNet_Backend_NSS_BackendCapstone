@@ -16,18 +16,16 @@ namespace EyesOnTheNet.Controllers
 
         public async Task<Stream> GetParameters()
         {
-            HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/get_status.cgi");
-            var stringedResponse = await response.Content.ReadAsStreamAsync();
+            Stream response = await Client.GetStreamAsync("http://192.168.0.223/get_status.cgi");
 
-            return stringedResponse;
+            return response;
         }
 
         public async Task<Stream> GetSnapshot()
         {
-            HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd=");
-            var stringedResponse = await response.Content.ReadAsStreamAsync();
+            Stream response = await Client.GetStreamAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd=");
 
-            return stringedResponse;
+            return response;
         }
     }
 }
