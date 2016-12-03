@@ -6,7 +6,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
-namespace eyesonthenet.Controllers
+namespace EyesOnTheNet.Controllers
 {
     public class HttpCameraAccess
     {
@@ -17,7 +17,9 @@ namespace eyesonthenet.Controllers
         public async Task<Stream> GetParameters()
         {
             HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/get_status.cgi");
+
             var stringedResponse = await response.Content.ReadAsStreamAsync();
+
 
             return stringedResponse;
         }
@@ -25,7 +27,11 @@ namespace eyesonthenet.Controllers
         public async Task<Stream> GetSnapshot()
         {
             HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd=");
+
+            response.Headers.Add("Content-Type", "image/jpeg");
+
             var stringedResponse = await response.Content.ReadAsStreamAsync();
+
 
             return stringedResponse;
         }
