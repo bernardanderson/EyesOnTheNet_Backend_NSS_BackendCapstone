@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using EyesOnTheNet.DAL;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -27,6 +28,12 @@ namespace EyesOnTheNet.Controllers
 
             if (id == 1)
             {
+                return currentCameraAccess.GetParameters();
+            } else if (id == 2)
+            {
+                EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
+
+                myEyes.AddFakeUser();
                 return currentCameraAccess.GetParameters();
             }
 
