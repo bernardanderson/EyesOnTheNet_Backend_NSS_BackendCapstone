@@ -13,6 +13,6 @@ namespace EyesOnTheNet.Models
         public string Filename { get; set; }
         public string FileLocation{ get; set; }
         public DateTime CreationDate { get; set; }
-        public Cameras CameraId { get; set; }
+        public Camera CameraId { get; set; }
     }
 }
