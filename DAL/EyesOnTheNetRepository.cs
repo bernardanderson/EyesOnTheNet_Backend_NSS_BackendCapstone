@@ -25,6 +25,7 @@ namespace EyesOnTheNet.DAL
             var user = new User
             {
                 Username = "CamUser1",
+                Password = "dummypass",
                 Email = "camuser1@gmail.com",
                 LastLoginDate = DateTime.Now,
                 RegistrationDate = DateTime.Now,

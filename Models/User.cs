@@ -11,7 +11,7 @@ namespace EyesOnTheNet.Models
     {
         [Key]
         public int UserId { get; set; }
-        [Required, MinLength(4), MaxLength(16)]
+        [Required, MinLength(4)]
         public string Username { get; set; }
         [Required, MinLength(8)]
         public string Password { get; set; }
