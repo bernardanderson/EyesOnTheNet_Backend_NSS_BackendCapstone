@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.Net.Http.Headers;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -20,15 +21,13 @@ namespace EyesOnTheNet.Controllers
 
             var stringedResponse = await response.Content.ReadAsStreamAsync();
 
-
             return stringedResponse;
         }
-
-        public async Task<Stream> GetSnapshot()
+        public async Task<byte[]> GetSnapshot()
         {
             HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd=");
 
-            var stringedResponse = await response.Content.ReadAsStreamAsync();
+            var stringedResponse = await response.Content.ReadAsByteArrayAsync();
 
             return stringedResponse;
         }
