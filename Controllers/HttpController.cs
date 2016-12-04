@@ -14,35 +14,17 @@ namespace EyesOnTheNet.Controllers
     {
         // GET api/http
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult> Get()
         {
-            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
-
-            var stream = await currentCameraAccess.GetSnapshot();
-
+            var stream = await new HttpRequests().GetSnapshot();
             return File(stream, "image/jpeg");
         }
 
-
-
-        /*
-        public HttpResponseMessage Get()
-        {
-            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
-
-            //return currentCameraAccess.GetSnapshot();
-            return currentCameraAccess.GetImage();
-        }
-        */
-
         // GET api/http/5
         [HttpGet("{id}")]
-        public Task<Stream> Get(int id)
+        public async Task<string> Get(int id)
         {
-            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
-
-            return currentCameraAccess.GetParameters();
-
+            return await new HttpRequests().GetParameters();
         }
 
         // POST api/http
