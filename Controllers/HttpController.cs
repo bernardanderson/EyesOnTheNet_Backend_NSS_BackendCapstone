@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using EyesOnTheNet.DAL;
+using System.Net.Http;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -13,31 +14,17 @@ namespace EyesOnTheNet.Controllers
     {
         // GET api/http
         [HttpGet]
-        public Task<Stream> Get()
+        public async Task<ActionResult> Get()
         {
-            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
-
-            return currentCameraAccess.GetSnapshot();
+            var stream = await new HttpRequests().GetSnapshot();
+            return File(stream, "image/jpeg");
         }
 
         // GET api/http/5
         [HttpGet("{id}")]
-        public Task<Stream> Get(int id)
+        public async Task<string> Get(int id)
         {
-            HttpCameraAccess currentCameraAccess = new HttpCameraAccess();
-
-            if (id == 1)
-            {
-                return currentCameraAccess.GetParameters();
-            } else if (id == 2)
-            {
-                EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
-
-                myEyes.AddFakeUser();
-                return currentCameraAccess.GetParameters();
-            }
-
-            return null;
+            return await new HttpRequests().GetParameters();
         }
 
         // POST api/http
