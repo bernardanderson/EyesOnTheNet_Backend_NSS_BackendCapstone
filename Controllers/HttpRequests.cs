@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
 using EyesOnTheNet.Models;
+using EyesOnTheNet.DAL;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -40,6 +41,12 @@ namespace EyesOnTheNet.Controllers
             //File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", pictureStream.data);
 
             return pictureStream;
+        }
+
+        public void CreateDatabase()
+        {
+            EyesOnTheNetRepository newEOTNR = new EyesOnTheNetRepository();
+            newEOTNR.AddFakeUser();
         }
     }
 }

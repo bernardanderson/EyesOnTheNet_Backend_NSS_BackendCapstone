@@ -21,11 +21,39 @@ namespace EyesOnTheNet.Controllers
             return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
+        /*
         // GET api/http/5
         [HttpGet("{id}")]
         public async Task<string> Get(int id)
         {
             return await new HttpRequests().GetParameters();
+        }
+        */
+
+        // GET api/http/5
+        [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
+
+            // myEyes.AddFakeUser();
+            //   OR
+            // myEyes.AddFakeCamera();
+
+            return "Int Route is Working";
+        }
+
+        // GET api/http/
+        [HttpGet("{id:bool}")]
+        public string Get(bool id)
+        {
+            //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
+
+            // myEyes.AddFakeUser();
+            //   OR
+            // myEyes.AddFakeCamera();
+
+            return "Bool Route is Working";
         }
 
         // POST api/http

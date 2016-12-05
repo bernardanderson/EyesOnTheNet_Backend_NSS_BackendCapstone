@@ -24,7 +24,7 @@ namespace EyesOnTheNet.DAL
         {
             var user = new User
             {
-                Username = "CamUser1",
+                Username = "Billy Bob",
                 Password = "dummypass",
                 Email = "camuser1@gmail.com",
                 LastLoginDate = DateTime.Now,
@@ -32,6 +32,18 @@ namespace EyesOnTheNet.DAL
             };
 
             Context.Add(user);
+            Context.SaveChanges();
+        }
+
+        public void AddFakeCamera()
+        {
+            var fakeCamera = new Camera
+            {
+                Name = "BigCam",
+                Type = 2
+            };
+
+            Context.Add(fakeCamera);
             Context.SaveChanges();
         }
     }

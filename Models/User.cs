@@ -15,7 +15,6 @@ namespace EyesOnTheNet.Models
         public string Username { get; set; }
         [Required, MinLength(8)]
         public string Password { get; set; }
-        [Required]
         public string Email { get; set; }
         public DateTime RegistrationDate { get; set; }
         public DateTime LastLoginDate { get; set; }

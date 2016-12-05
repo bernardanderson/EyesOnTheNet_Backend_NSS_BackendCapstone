@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace EyesOnTheNet.Models
     public class Camera
     {
         [Key]
-        public int CameraId { get; set; }
+        public Guid CameraId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
