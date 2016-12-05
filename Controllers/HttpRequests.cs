@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
+using EyesOnTheNet.Models;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -23,17 +24,22 @@ namespace EyesOnTheNet.Controllers
 
             return combinedResponse;
         }
-        public async Task<byte[]> GetSnapshot()
+        public async Task<Picture> GetSnapshot()
         {
-            HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd="); // Fosacam Camera
+            HttpResponseMessage response = await Client.GetAsync("http://wwc.instacam.com/instacamimg/NSHV1/NSHV1_l.jpg"); // For Adventure Science Center
+            //HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd="); // Fosacam Camera
             //HttpResponseMessage response = await Client.GetAsync("http://192.168.0.202:8080/shot.jpg"); // For IPCam Cell Camera
 
-            var combinedResponse = await response.Content.ReadAsByteArrayAsync();
+            Picture pictureStream = new Picture
+            {
+                data = await response.Content.ReadAsByteArrayAsync(),
+                encodeType = "image/jpeg"
+            };
 
             // The below string will write the received image stream the specified file/location  
             // File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", stringedResponse);
 
-            return combinedResponse;
+            return pictureStream;
         }
     }
 }

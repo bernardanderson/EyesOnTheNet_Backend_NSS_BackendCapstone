@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using EyesOnTheNet.DAL;
 using System.Net.Http;
+using EyesOnTheNet.Models;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -16,8 +17,8 @@ namespace EyesOnTheNet.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var stream = await new HttpRequests().GetSnapshot();
-            return File(stream, "image/jpeg");
+            Picture cameraPicture = await new HttpRequests().GetSnapshot();
+            return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
         // GET api/http/5
