@@ -37,7 +37,7 @@ namespace EyesOnTheNet.Controllers
             };
 
             // The below string will write the received image stream the specified file/location  
-            // File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", stringedResponse);
+            //File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", pictureStream.data);
 
             return pictureStream;
         }
