@@ -10,7 +10,7 @@ namespace EyesOnTheNet.Models
     public class User
     {
         [Key]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         [Required, MinLength(4)]
         public string Username { get; set; }
         [Required, MinLength(8)]
