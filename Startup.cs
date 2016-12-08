@@ -36,43 +36,13 @@ namespace EyesOnTheNet
             services.AddMvc();
         }
 
-        //private static readonly string secretKey = PrivateParameters.JWTSecretKey;
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             ///// Start of JWT Authentication Middleware
             //app.UseStaticFiles();
 
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PrivateParameters.JWTSecretKey)); // secretKey is Private and known to the server ONLY
-
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                // The signing key must match!
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey,
-
-                // Validate the JWT Issuer (iss) claim
-                ValidateIssuer = true,
-                ValidIssuer = "EotWServer",
-
-                // Validate the JWT Audience (aud) claim
-                ValidateAudience = true,
-                ValidAudience = "EotWUser",
-
-                // Validate the token expiry
-                ValidateLifetime = true,
-
-                // If you want to allow a certain amount of clock drift, set that here:
-                ClockSkew = TimeSpan.Zero
-            };
-
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = tokenValidationParameters
-            });
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PrivateParameters.JWTSecretKey)); // JWTSecretKey is Private and known to the server ONLY
 
             // Add JWT generation endpoint:
             var options = new TokenProviderOptions
