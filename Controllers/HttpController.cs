@@ -7,6 +7,7 @@ using System.IO;
 using EyesOnTheNet.DAL;
 using System.Net.Http;
 using EyesOnTheNet.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -15,6 +16,7 @@ namespace EyesOnTheNet.Controllers
     {
         // GET api/http
         [HttpGet]
+        //[Authorize]
         public async Task<ActionResult> Get()
         {
             Picture cameraPicture = await new HttpRequests().GetSnapshot();
