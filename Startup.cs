@@ -39,13 +39,47 @@ namespace EyesOnTheNet
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            ///// Start of JWT Authentication Middleware
-            //app.UseStaticFiles();
+            ///// Start of JWT Middleware
+            SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PrivateParameters.JWTSecretKey)); // JWTSecretKey is Private and known to the server ONLY
 
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PrivateParameters.JWTSecretKey)); // JWTSecretKey is Private and known to the server ONLY
+            /// Start of JWT Cookie Authentication 
+            TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
+            {
+                // The signing key must match!
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = signingKey,
 
-            // Add JWT generation endpoint:
-            var options = new TokenProviderOptions
+                // Validate the JWT Issuer (iss) claim
+                ValidateIssuer = true,
+                ValidIssuer = "EotWServer",
+
+                // Validate the JWT Audience (aud) claim
+                ValidateAudience = true,
+                ValidAudience = "EotWUser",
+
+                // Validate the token expiry
+                ValidateLifetime = true,
+
+                // If you want to allow a certain amount of clock drift, set that here:
+                ClockSkew = TimeSpan.Zero
+            };
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                AuthenticationScheme = "Cookie",
+                CookieName = "access_token",
+                TicketDataFormat = new CustomJwtDataFormat(
+                    SecurityAlgorithms.HmacSha256,
+                    tokenValidationParameters)
+            });
+
+            /// End of JWT Cookie Authentication 
+
+
+            /// Start of JWT generation endpoint
+            TokenProviderOptions options = new TokenProviderOptions
             {
                 Audience = "EotWUser",
                 Issuer = "EotWServer",
@@ -54,11 +88,13 @@ namespace EyesOnTheNet
 
             // Techincally not part of the JWT Middleware, but needed to allow CORS access for the
             //  custom headers I'm using.  THIS needs to be above the app.UseMiddleware below
-            app.UseCors(builder =>
-                builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS").WithHeaders("Authorization")
-            );
+            //app.UseCors(builder =>
+            //    builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS").WithHeaders("Authorization")
+            //);
 
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
+
+            /// End of JWT generation endpoint
 
             ///// End of JWT Authentication Middleware
 
