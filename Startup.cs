@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using EyesOnTheNet.Private;
 using EyesOnTheNet.TokenProvider;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.Extensions.Options;
 
 namespace EyesOnTheNet
 {
@@ -74,9 +71,7 @@ namespace EyesOnTheNet
                     SecurityAlgorithms.HmacSha256,
                     tokenValidationParameters)
             });
-
             /// End of JWT Cookie Authentication 
-
 
             /// Start of JWT generation endpoint
             TokenProviderOptions options = new TokenProviderOptions
@@ -86,18 +81,9 @@ namespace EyesOnTheNet
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
             };
 
-            // Techincally not part of the JWT Middleware, but needed to allow CORS access for the
-            //  custom headers I'm using.  THIS needs to be above the app.UseMiddleware below
-            //app.UseCors(builder =>
-            //    builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS").WithHeaders("Authorization")
-            //);
-
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
-
             /// End of JWT generation endpoint
-
             ///// End of JWT Authentication Middleware
-
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();

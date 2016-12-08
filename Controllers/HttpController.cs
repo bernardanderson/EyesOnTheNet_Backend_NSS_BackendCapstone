@@ -34,6 +34,7 @@ namespace EyesOnTheNet.Controllers
 
         // GET api/http/5
         [HttpGet("{id}")]
+        [Authorize]
         public string Get(int id)
         {
             //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
@@ -47,16 +48,10 @@ namespace EyesOnTheNet.Controllers
 
         // GET api/http/
         [HttpGet("{id:bool}")]
-        [Authorize]
-        public string Get(bool id)
+        public async Task<ActionResult> Get(bool id)
         {
-            //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
-
-            // myEyes.AddFakeUser();
-            //   OR
-            // myEyes.AddFakeCamera();
-
-            return "Bool Route is Working";
+            Picture cameraPicture = await new HttpRequests().GetSnapshot();
+            return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
         // POST api/http

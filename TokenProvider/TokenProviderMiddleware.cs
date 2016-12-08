@@ -73,15 +73,13 @@ namespace EyesOnTheNet.TokenProvider
                 signingCredentials: _options.SigningCredentials);
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new
-            {
-                access_token = encodedJwt,
-                expires_in = (int)_options.Expiration.TotalSeconds
-            };
+            // Sends the JWT as a cookie to the browser
 
-            // Serialize and return the response
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
+            CookieOptions options = new CookieOptions();
+            options.Expires = DateTime.Now.AddDays(1);
+            options.HttpOnly = true;
+            context.Response.Cookies.Append("access_token", encodedJwt, options);
+            //
         }
 
         private Task<ClaimsIdentity> GetIdentity(string username, string password)
