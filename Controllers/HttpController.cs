@@ -7,6 +7,7 @@ using System.IO;
 using EyesOnTheNet.DAL;
 using System.Net.Http;
 using EyesOnTheNet.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -15,6 +16,7 @@ namespace EyesOnTheNet.Controllers
     {
         // GET api/http
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> Get()
         {
             Picture cameraPicture = await new HttpRequests().GetSnapshot();
@@ -32,6 +34,7 @@ namespace EyesOnTheNet.Controllers
 
         // GET api/http/5
         [HttpGet("{id}")]
+        [Authorize]
         public string Get(int id)
         {
             //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
@@ -45,15 +48,10 @@ namespace EyesOnTheNet.Controllers
 
         // GET api/http/
         [HttpGet("{id:bool}")]
-        public string Get(bool id)
+        public async Task<ActionResult> Get(bool id)
         {
-            //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
-
-            // myEyes.AddFakeUser();
-            //   OR
-            // myEyes.AddFakeCamera();
-
-            return "Bool Route is Working";
+            Picture cameraPicture = await new HttpRequests().GetSnapshot();
+            return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
         // POST api/http

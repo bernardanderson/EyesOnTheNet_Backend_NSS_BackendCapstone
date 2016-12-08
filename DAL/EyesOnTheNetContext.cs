@@ -16,6 +16,6 @@ namespace EyesOnTheNet.DAL
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder
-                    .UseMySql(MySQLParams.MySQLParameterString); //Requires access to the private MySQL conntection string 
+                    .UseMySql(PrivateParameters.MySQLParameterString); //Requires access to the private MySQL conntection string 
     }
 }
