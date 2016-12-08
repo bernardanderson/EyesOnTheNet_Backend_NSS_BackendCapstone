@@ -81,6 +81,12 @@ namespace EyesOnTheNet
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
             };
 
+            // Technically not part of the JWT middleware but needed for CORS acc
+            app.UseCors(builder =>
+                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()  // This works but opens the whole thing up!
+                //builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS")
+            );
+
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
             /// End of JWT generation endpoint
             ///// End of JWT Authentication Middleware
@@ -88,7 +94,12 @@ namespace EyesOnTheNet
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "default",
+                  template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
