@@ -16,7 +16,7 @@ namespace EyesOnTheNet.Controllers
     {
         // GET api/http
         [HttpGet]
-        //[Authorize]
+        [Authorize]
         public async Task<ActionResult> Get()
         {
             Picture cameraPicture = await new HttpRequests().GetSnapshot();
@@ -47,6 +47,7 @@ namespace EyesOnTheNet.Controllers
 
         // GET api/http/
         [HttpGet("{id:bool}")]
+        [Authorize]
         public string Get(bool id)
         {
             //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();

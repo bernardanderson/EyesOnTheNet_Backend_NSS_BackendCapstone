@@ -36,15 +36,15 @@ namespace EyesOnTheNet
             services.AddMvc();
         }
 
-        private static readonly string secretKey = PrivateParameters.JWTSecretKey;
+        //private static readonly string secretKey = PrivateParameters.JWTSecretKey;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             ///// Start of JWT Authentication Middleware
-            app.UseStaticFiles();
+            //app.UseStaticFiles();
 
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)); // secretKey is Private and known to the server ONLY
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PrivateParameters.JWTSecretKey)); // secretKey is Private and known to the server ONLY
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -82,13 +82,13 @@ namespace EyesOnTheNet
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
             };
 
-            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
-
             // Techincally not part of the JWT Middleware, but needed to allow CORS access for the
-            //  custom headers I'm using.
+            //  custom headers I'm using.  THIS needs to be above the app.UseMiddleware below
             app.UseCors(builder =>
                 builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS").WithHeaders("Authorization")
             );
+
+            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
 
             ///// End of JWT Authentication Middleware
 
