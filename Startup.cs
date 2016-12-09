@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using EyesOnTheNet.Private;
 using EyesOnTheNet.TokenProvider;
+using Microsoft.AspNetCore.Http;
 
 namespace EyesOnTheNet
 {
@@ -63,6 +64,10 @@ namespace EyesOnTheNet
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
+                //LoginPath = new PathString("/Account/Unauthorized/"),
+                //AccessDeniedPath = new PathString("/Account/Forbidden/"),
+                LoginPath = new PathString("/"),
+                AccessDeniedPath = new PathString("/"),
                 AutomaticAuthenticate = true,
                 AutomaticChallenge = true,
                 AuthenticationScheme = "Cookie",
@@ -78,8 +83,14 @@ namespace EyesOnTheNet
             {
                 Audience = "EotWUser",
                 Issuer = "EotWServer",
-                SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
+                SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256)
             };
+
+            // Technically not part of the JWT middleware but needed for CORS acc
+            app.UseCors(builder =>
+                builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()  // This works but opens the whole thing up!
+                //builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS")
+            );
 
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
             /// End of JWT generation endpoint
@@ -88,7 +99,12 @@ namespace EyesOnTheNet
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                  name: "default",
+                  template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

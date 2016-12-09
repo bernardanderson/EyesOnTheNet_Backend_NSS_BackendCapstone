@@ -74,11 +74,21 @@ namespace EyesOnTheNet.TokenProvider
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             // Sends the JWT as a cookie to the browser
+            //CookieOptions options = new CookieOptions();
+            //options.Expires = DateTime.Now.AddDays(1);
+            //options.HttpOnly = true;
+            //context.Response.Cookies.Append("access_token", encodedJwt, options);
 
-            CookieOptions options = new CookieOptions();
-            options.Expires = DateTime.Now.AddDays(1);
-            options.HttpOnly = true;
-            context.Response.Cookies.Append("access_token", encodedJwt, options);
+            // OR
+
+            //Sends the JWT as a string to the browser
+            var response = new
+            {
+                access_token = encodedJwt,
+                expires_in = (int)_options.Expiration.TotalSeconds
+            };
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
             //
         }
 
