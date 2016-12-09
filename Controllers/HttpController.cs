@@ -34,16 +34,16 @@ namespace EyesOnTheNet.Controllers
 
         // GET api/http/5
         [HttpGet("{id}")]
-        [Authorize]
+        //[Authorize]
         public string Get(int id)
         {
-            //EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
+            EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
 
-            // myEyes.AddFakeUser();
+            myEyes.AddFakeUser();
             //   OR
             // myEyes.AddFakeCamera();
 
-            return "Int Route is Working";
+            return "Fake User Created";
         }
 
         // GET api/http/
