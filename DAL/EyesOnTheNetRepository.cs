@@ -24,9 +24,9 @@ namespace EyesOnTheNet.DAL
         {
             var user = new User
             {
-                Username = "Billy Bob",
-                Password = "dummypass",
-                Email = "camuser1@gmail.com",
+                Username = "qweqwe",
+                Password = "qweqwe",
+                Email = "testcamuser@gmail.com",
                 LastLoginDate = DateTime.Now,
                 RegistrationDate = DateTime.Now,
             };
@@ -45,6 +45,20 @@ namespace EyesOnTheNet.DAL
 
             Context.Add(fakeCamera);
             Context.SaveChanges();
+        }
+
+        public bool CheckUserRegistration(string sentUserName, string sentPassword)
+        {
+            var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+
+            if (foundUser == null)
+            {
+                return false;
+            } else if (foundUser.Password != sentPassword)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using EyesOnTheNet.DAL;
 
 namespace EyesOnTheNet.TokenProvider
 {
@@ -73,14 +74,6 @@ namespace EyesOnTheNet.TokenProvider
                 signingCredentials: _options.SigningCredentials);
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            // Sends the JWT as a cookie to the browser
-            //CookieOptions options = new CookieOptions();
-            //options.Expires = DateTime.Now.AddDays(1);
-            //options.HttpOnly = true;
-            //context.Response.Cookies.Append("access_token", encodedJwt, options);
-
-            // OR
-
             //Sends the JWT as a string to the browser
             var response = new
             {
@@ -94,8 +87,10 @@ namespace EyesOnTheNet.TokenProvider
 
         private Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
+            EyesOnTheNetRepository EyesUserCheck = new EyesOnTheNetRepository();
+
             // DON'T do this in production, obviously!
-            if (username == "TEST" && password == "TEST123")
+            if ( EyesUserCheck.CheckUserRegistration(username, password) )
             {
                 return Task.FromResult(new ClaimsIdentity(new System.Security.Principal.GenericIdentity(username, "Token"), new Claim[] { }));
             }
