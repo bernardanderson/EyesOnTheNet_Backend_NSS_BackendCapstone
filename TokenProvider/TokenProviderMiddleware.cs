@@ -90,7 +90,7 @@ namespace EyesOnTheNet.TokenProvider
             EyesOnTheNetRepository EyesUserCheck = new EyesOnTheNetRepository();
 
             // DON'T do this in production, obviously!
-            if ( EyesUserCheck.CheckUserRegistration(username, password) )
+            if ( EyesUserCheck.CheckUserLogin(username, password) )
             {
                 return Task.FromResult(new ClaimsIdentity(new System.Security.Principal.GenericIdentity(username, "Token"), new Claim[] { }));
             }
