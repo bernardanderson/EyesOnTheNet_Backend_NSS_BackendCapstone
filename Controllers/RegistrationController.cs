@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net;
 using EyesOnTheNet.Models;
+using EyesOnTheNet.DAL;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -34,8 +35,20 @@ namespace EyesOnTheNet.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]User sentUser)
         {
-            string userName = sentUser.Username;
-            return Ok(sentUser);
+            EyesOnTheNetRepository context = new EyesOnTheNetRepository();
+
+            KeyValuePair<bool, string> registrationResult = context.RegisterUser(sentUser);
+
+            if (registrationResult.Key)
+            {
+                return Ok(registrationResult.Value);
+            }
+            else
+            {
+                return NotFound(registrationResult.Value);
+            };
+
+            
         }
 
         // PUT api/values/5
