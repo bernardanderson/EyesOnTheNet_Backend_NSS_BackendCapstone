@@ -20,6 +20,15 @@ namespace EyesOnTheNet.DAL
             Context.Database.EnsureCreated();
         }
 
+        private void AddUser(User sentUser)
+        {
+            sentUser.LastLoginDate = DateTime.Now;
+            sentUser.RegistrationDate = DateTime.Now;
+
+            Context.Add(sentUser);
+            Context.SaveChanges();
+        }
+
         public void AddFakeUser()
         {
             var user = new User
@@ -46,7 +55,18 @@ namespace EyesOnTheNet.DAL
             Context.Add(fakeCamera);
             Context.SaveChanges();
         }
+        // Checks just the UserName
+        public bool CheckUserLogin(string sentUserName)
+        {
+            var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
 
+            if (foundUser != null)
+            {
+                return true; // The user is found, therefore already exists.
+            }
+            return false; // The user is not found and can be added.
+        }
+        // Checks both the UserName and Password
         public bool CheckUserLogin(string sentUserName, string sentPassword)
         {
             var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
@@ -60,12 +80,16 @@ namespace EyesOnTheNet.DAL
             }
             return true;
         }
-        public bool RegisterUser(string sentUserName, string sentPassword)
+        public KeyValuePair<bool, string> RegisterUser(User sentUser)
         {
-            return true;
+            if (sentUser.Username == "" || sentUser.Password == "")
+            {
+                return new KeyValuePair<bool, string> (false, "Blank User Name or Password");
+            } else if (this.CheckUserLogin(sentUser.Username)) {
+                return new KeyValuePair<bool, string>(false, "User Already Exists!");
+            }
+            this.AddUser(sentUser);
+            return new KeyValuePair<bool, string>(true, "Successfully Registered");
         }
-
-
-
     }
 }
