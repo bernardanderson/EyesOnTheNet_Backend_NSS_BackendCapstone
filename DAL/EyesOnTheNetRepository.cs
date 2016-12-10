@@ -47,7 +47,7 @@ namespace EyesOnTheNet.DAL
             Context.SaveChanges();
         }
 
-        public bool CheckUserRegistration(string sentUserName, string sentPassword)
+        public bool CheckUserLogin(string sentUserName, string sentPassword)
         {
             var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
 
@@ -60,5 +60,12 @@ namespace EyesOnTheNet.DAL
             }
             return true;
         }
+        public bool RegisterUser(string sentUserName, string sentPassword)
+        {
+            return true;
+        }
+
+
+
     }
 }
