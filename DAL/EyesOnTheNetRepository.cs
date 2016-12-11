@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace EyesOnTheNet.DAL
 {
     public class EyesOnTheNetRepository
@@ -29,30 +30,67 @@ namespace EyesOnTheNet.DAL
             Context.SaveChanges();
         }
 
-        public void AddFakeUser()
+        public void AddFakeEverything()
         {
             var user = new User
             {
                 Username = "qweqwe",
                 Password = "qweqwe",
-                Email = "testcamuser@gmail.com",
+                Email = "qweqwe@gmail.com",
+                LastLoginDate = DateTime.Now,
+                RegistrationDate = DateTime.Now,
+            };
+            Context.Add(user);
+
+            var user1 = new User
+            {
+                Username = "wewe",
+                Password = "wewe",
+                Email = "wewe@gmail.com",
                 LastLoginDate = DateTime.Now,
                 RegistrationDate = DateTime.Now,
             };
 
-            Context.Add(user);
             Context.SaveChanges();
-        }
 
-        public void AddFakeCamera()
-        {
             var fakeCamera = new Camera
             {
-                Name = "BigCam",
-                Type = 2
+                Name = "Adventure Science Center",
+                Type = 2,
+                WebAddress = "http://wwc.instacam.com/instacamimg/NSHV1/NSHV1_l.jpg",
+                LoginName= "",
+                LoginPass= "",
+                Private = 1,
+                CanAccess = 0,
+                CreatedBy = user
             };
-
             Context.Add(fakeCamera);
+
+            var fakeCamera1 = new Camera
+            {
+                Name = "Vanderbilt Dean Cam",
+                Type = 2,
+                WebAddress = "http://webcams.vanderbilt.edu/thecommons/deans_ctr/deans_ctr_evocam.jpg",
+                LoginName = "",
+                LoginPass = "",
+                Private = 1,
+                CanAccess = 0,
+                CreatedBy = user1
+            };
+            Context.Add(fakeCamera1);
+
+            var fakeCamera2 = new Camera
+            {
+                Name = "Vanderbilt New Olin Building",
+                Type = 2,
+                WebAddress = "http://webcams.vanderbilt.edu/newolin/newolin_evocam.jpg",
+                LoginName = "",
+                LoginPass = "",
+                Private = 1,
+                CanAccess = 0,
+                CreatedBy = user
+            };
+            Context.Add(fakeCamera2);
             Context.SaveChanges();
         }
         // Checks just the UserName
@@ -66,11 +104,11 @@ namespace EyesOnTheNet.DAL
             }
             return false; // The user is not found and can be added.
         }
+
         // Checks both the UserName and Password
         public bool CheckUserLogin(string sentUserName, string sentPassword)
         {
             var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
-
             if (foundUser == null)
             {
                 return false;
@@ -90,6 +128,20 @@ namespace EyesOnTheNet.DAL
             }
             this.AddUser(sentUser);
             return new KeyValuePair<bool, string>(true, "Successfully Registered");
+        }
+
+        public List<Camera> ReturnUserCameras(string sentUser)
+        {
+            //Returns the List of Cameras Associated with that User
+            return Context.Cameras.Where(x => x.CreatedBy.Username == sentUser).ToList();
+        }
+
+        public Camera CanAccessThisCamera(string sentUser, int sentCameraId)
+        {
+            Camera foundCamera = new Camera();
+            foundCamera = this.ReturnUserCameras(sentUser).FirstOrDefault(x => x.CameraId == sentCameraId);
+
+            return foundCamera;
         }
     }
 }

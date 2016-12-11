@@ -10,15 +10,17 @@ namespace EyesOnTheNet.Models
     public class Camera
     {
         [Key]
-        public Guid CameraId { get; set; }
+        public int CameraId { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
         public int Type { get; set; }
-        public string Location { get; set; }
+        public string WebAddress { get; set; }
         public string LoginName { get; set; }
         public string LoginPass { get; set; }
-        public bool Private { get; set; }
-        public User CreatedBy { get; set; }
+        public int Private { get; set; } 
+        public int CanAccess { get; set; } 
+        [ForeignKey("User")]
+        public virtual User CreatedBy { get; set; }
     }
 }
