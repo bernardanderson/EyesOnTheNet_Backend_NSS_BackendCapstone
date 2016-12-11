@@ -32,20 +32,6 @@ namespace EyesOnTheNet.Controllers
         }
         */
 
-        // GET api/http/5
-        [HttpGet("{id}")]
-        //[Authorize]
-        public string Get(int id)
-        {
-            EyesOnTheNetRepository myEyes = new EyesOnTheNetRepository();
-
-            myEyes.AddFakeUser();
-            //   OR
-            // myEyes.AddFakeCamera();
-
-            return "Fake User Created";
-        }
-
         // GET api/http/
         [HttpGet("{id:bool}")]
         public async Task<ActionResult> Get(bool id)

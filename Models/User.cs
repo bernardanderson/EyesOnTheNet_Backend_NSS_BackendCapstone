@@ -10,14 +10,14 @@ namespace EyesOnTheNet.Models
     public class User
     {
         [Key]
-        public Guid UserId { get; set; }
-        [Required, MinLength(4)]
+        public int UserId { get; set; }
+        [Required]
         public string Username { get; set; }
-        [Required, MinLength(8)]
+        [Required]
         public string Password { get; set; }
         public string Email { get; set; }
         public DateTime RegistrationDate { get; set; }
         public DateTime LastLoginDate { get; set; }
-        public List<Camera> CameraList { get; set; }
+        public List<Camera> CameraId { get; set; }
     }
 }

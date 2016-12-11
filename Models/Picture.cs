@@ -9,6 +9,5 @@ namespace EyesOnTheNet.Models
     {
         public byte[] data { get; set; }
         public string encodeType { get; set; }
-
     }
 }
