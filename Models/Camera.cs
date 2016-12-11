@@ -18,7 +18,9 @@ namespace EyesOnTheNet.Models
         public string WebAddress { get; set; }
         public string LoginName { get; set; }
         public string LoginPass { get; set; }
-        public bool Private { get; set; }
-        public int UserId { get; set; }
+        public int Private { get; set; } 
+        public int CanAccess { get; set; } 
+        [ForeignKey("User")]
+        public virtual User CreatedBy { get; set; }
     }
 }

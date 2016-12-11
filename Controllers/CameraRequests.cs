@@ -12,7 +12,7 @@ using EyesOnTheNet.DAL;
 
 namespace EyesOnTheNet.Controllers
 {
-    public class HttpRequests
+    public class CameraRequests
     {
         // Using a static method for HttpClient reduces the build up of 'waiting' threads which can severely hinder performance
         //  http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
@@ -41,12 +41,6 @@ namespace EyesOnTheNet.Controllers
             //File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", pictureStream.data);
 
             return pictureStream;
-        }
-
-        public void CreateDatabase()
-        {
-            EyesOnTheNetRepository newEOTNR = new EyesOnTheNetRepository();
-            newEOTNR.AddFakeUser();
         }
     }
 }

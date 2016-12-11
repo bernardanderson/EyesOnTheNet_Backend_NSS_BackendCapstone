@@ -8,33 +8,52 @@ using EyesOnTheNet.DAL;
 using EyesOnTheNet.Models;
 using System.IdentityModel.Tokens.Jwt;
 
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace EyesOnTheNet.Controllers
 {
-    [Route("api/[controller]")]
     public class CameraController : Controller
     {
-        // GET: api/values
-        [HttpGet]
+        // GET: api/camera
+        // Gets the list of a users cameras
+        [HttpGet("api/[controller]")]
         [Authorize]
-        public IEnumerable<Camera> Get()
+        public IEnumerable<Camera> GetListOfUserCameras()
         {
-            EyesOnTheNetRepository newRepo = new EyesOnTheNetRepository();
+            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            return newRepo.ReturnUserCameras(currentUser);
+            return newEotnRepo.ReturnUserCameras(currentUser);
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET: api/camera/5/snapshot
+        // Pulls an image from a single camera (based on it's table ID) for display
+        [HttpGet("api/[controller]/{cameraId:int}/snapshot")]
+        public async Task<ActionResult> GetSingleCameraImage(int cameraId)
         {
-            //EyesOnTheNetRepository newRepo = new EyesOnTheNetRepository();
-            //newRepo.AddFakeUser();
-            //newRepo.AddFakeCameras(id);
-            return "Camaras Made!";
+            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+
+            if (newEotnRepo.CanAccessThisCamera(currentUser, cameraId))
+            {
+                Picture cameraPicture = await new CameraRequests().GetSnapshot();
+                return File(cameraPicture.data, cameraPicture.encodeType);
+            } else
+            {
+                return Unauthorized();
+            }
         }
+
+        // GET: api/camera/build_database
+        // Used for initial database build
+        [HttpGet("api/[controller]/build_database")]
+        public IActionResult GetBuildDatabase()
+        {
+            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
+
+            newEotnRepo.AddFakeEverything();
+
+            return Ok("Successful DB Creation");
+        }
+
+
 
         // POST api/values
         [HttpPost]

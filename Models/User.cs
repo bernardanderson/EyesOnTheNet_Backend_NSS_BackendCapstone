@@ -18,6 +18,5 @@ namespace EyesOnTheNet.Models
         public string Email { get; set; }
         public DateTime RegistrationDate { get; set; }
         public DateTime LastLoginDate { get; set; }
-        public List<Camera> CameraId { get; set; }
     }
 }

@@ -30,7 +30,7 @@ namespace EyesOnTheNet.DAL
             Context.SaveChanges();
         }
 
-        public void AddFakeUser()
+        public void AddFakeEverything()
         {
             var user = new User
             {
@@ -40,13 +40,9 @@ namespace EyesOnTheNet.DAL
                 LastLoginDate = DateTime.Now,
                 RegistrationDate = DateTime.Now,
             };
-
             Context.Add(user);
             Context.SaveChanges();
-        }
 
-        public void AddFakeCameras(int sentUserId)
-        {
             var fakeCamera = new Camera
             {
                 Name = "Adventure Science Center",
@@ -54,8 +50,9 @@ namespace EyesOnTheNet.DAL
                 WebAddress = "https://instacam.weatherbug.com/instacamimg/NSHV1/12102016/121020161546_l.jpg",
                 LoginName= "",
                 LoginPass= "",
-                Private = false,
-                UserId = sentUserId
+                Private = 1,
+                CanAccess = 0,
+                CreatedBy = user
             };
             Context.Add(fakeCamera);
 
@@ -66,8 +63,9 @@ namespace EyesOnTheNet.DAL
                 WebAddress = "http://webcams.vanderbilt.edu/thecommons/deans_ctr/deans_ctr_evocam.jpg",
                 LoginName = "",
                 LoginPass = "",
-                Private = false,
-                UserId = sentUserId
+                Private = 1,
+                CanAccess = 0,
+                CreatedBy = user
             };
             Context.Add(fakeCamera1);
 
@@ -78,11 +76,11 @@ namespace EyesOnTheNet.DAL
                 WebAddress = "http://webcams.vanderbilt.edu/newolin/newolin_evocam.jpg",
                 LoginName = "",
                 LoginPass = "",
-                Private = false,
-                UserId = sentUserId
+                Private = 1,
+                CanAccess = 0,
+                CreatedBy = user
             };
             Context.Add(fakeCamera2);
-
             Context.SaveChanges();
         }
         // Checks just the UserName
@@ -124,11 +122,21 @@ namespace EyesOnTheNet.DAL
 
         public List<Camera> ReturnUserCameras(string sentUser)
         {
-            // Finds the user and sets it's ID
-            int userId = Context.Users.FirstOrDefault(x => x.Username == sentUser).UserId;
-            
             //Returns the List of Cameras Associated with that User
-            return Context.Cameras.Where(x => x.UserId == userId).ToList();
+            return Context.Cameras.Where(x => x.CreatedBy.Username == sentUser).ToList();
+        }
+
+        // Checks to see if a user has access to a specific camera.
+        public bool CanAccessThisCamera(string sentUser, int sentCameraId)
+        {
+            User foundUser = Context.Cameras.FirstOrDefault(x => x.CreatedBy.Username == sentUser).CreatedBy;
+            /*
+            if (Context.Cameras.FirstOrDefault(x => x.CameraId == sentCameraId).UserId == foundUserId)
+            {
+                return true;
+            }
+            */
+            return false;
         }
     }
 }

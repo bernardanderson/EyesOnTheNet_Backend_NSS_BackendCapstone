@@ -14,29 +14,28 @@ namespace EyesOnTheNet.Controllers
     [Route("api/[controller]")]
     public class HttpController : Controller
     {
+        /*
         // GET api/http
         [HttpGet]
         [Authorize]
         public async Task<ActionResult> Get()
         {
-            Picture cameraPicture = await new HttpRequests().GetSnapshot();
+            Picture cameraPicture = await new CameraRequests().GetSnapshot();
             return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
-        /*
         // GET api/http/5
         [HttpGet("{id}")]
         public async Task<string> Get(int id)
         {
             return await new HttpRequests().GetParameters();
         }
-        */
 
         // GET api/http/
         [HttpGet("{id:bool}")]
         public async Task<ActionResult> Get(bool id)
         {
-            Picture cameraPicture = await new HttpRequests().GetSnapshot();
+            Picture cameraPicture = await new CameraRequests().GetSnapshot();
             return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
@@ -57,5 +56,6 @@ namespace EyesOnTheNet.Controllers
         public void Delete(int id)
         {
         }
+        */
     }
 }
