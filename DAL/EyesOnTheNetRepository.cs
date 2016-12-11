@@ -41,13 +41,23 @@ namespace EyesOnTheNet.DAL
                 RegistrationDate = DateTime.Now,
             };
             Context.Add(user);
+
+            var user1 = new User
+            {
+                Username = "wewe",
+                Password = "wewe",
+                Email = "wewe@gmail.com",
+                LastLoginDate = DateTime.Now,
+                RegistrationDate = DateTime.Now,
+            };
+
             Context.SaveChanges();
 
             var fakeCamera = new Camera
             {
                 Name = "Adventure Science Center",
                 Type = 2,
-                WebAddress = "https://instacam.weatherbug.com/instacamimg/NSHV1/12102016/121020161546_l.jpg",
+                WebAddress = "http://wwc.instacam.com/instacamimg/NSHV1/NSHV1_l.jpg",
                 LoginName= "",
                 LoginPass= "",
                 Private = 1,
@@ -65,7 +75,7 @@ namespace EyesOnTheNet.DAL
                 LoginPass = "",
                 Private = 1,
                 CanAccess = 0,
-                CreatedBy = user
+                CreatedBy = user1
             };
             Context.Add(fakeCamera1);
 
@@ -126,17 +136,12 @@ namespace EyesOnTheNet.DAL
             return Context.Cameras.Where(x => x.CreatedBy.Username == sentUser).ToList();
         }
 
-        // Checks to see if a user has access to a specific camera.
-        public bool CanAccessThisCamera(string sentUser, int sentCameraId)
+        public Camera CanAccessThisCamera(string sentUser, int sentCameraId)
         {
-            User foundUser = Context.Cameras.FirstOrDefault(x => x.CreatedBy.Username == sentUser).CreatedBy;
-            /*
-            if (Context.Cameras.FirstOrDefault(x => x.CameraId == sentCameraId).UserId == foundUserId)
-            {
-                return true;
-            }
-            */
-            return false;
+            Camera foundCamera = new Camera();
+            foundCamera = this.ReturnUserCameras(sentUser).FirstOrDefault(x => x.CameraId == sentCameraId);
+
+            return foundCamera;
         }
     }
 }

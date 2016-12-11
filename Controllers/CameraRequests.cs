@@ -25,11 +25,30 @@ namespace EyesOnTheNet.Controllers
 
             return combinedResponse;
         }
-        public async Task<Picture> GetSnapshot()
+        public async Task<Picture> GetSnapshot(Camera sentCamera)
         {
-            HttpResponseMessage response = await Client.GetAsync("http://wwc.instacam.com/instacamimg/NSHV1/NSHV1_l.jpg"); // For Adventure Science Center
-            //HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/snapshot.cgi?user=mover&pwd="); // Fosacam Camera
-            //HttpResponseMessage response = await Client.GetAsync("http://192.168.0.202:8080/shot.jpg"); // For IPCam Cell Camera
+            string connectionString = ""; 
+
+            switch (sentCamera.Type)
+            {
+                case 0:
+                    // Foscam Webcam
+                    connectionString = $"{sentCamera.WebAddress}/snapshot.cgi?user={sentCamera.LoginName}&pwd={sentCamera.LoginPass}";
+                    break;
+                case 1:
+                    // IPCam Cell Phone App
+                    connectionString = $"{sentCamera.WebAddress}/shot.jpg";
+                    break;
+                case 2:
+                    // Public Webcam
+                    connectionString = $"{sentCamera.WebAddress}";
+                    break;
+                default:
+                    connectionString = "http://www.clipartbest.com/cliparts/yio/eXG/yioeXG4RT.jpeg";
+                    break;
+            }
+
+            HttpResponseMessage response = await Client.GetAsync(connectionString); 
 
             Picture pictureStream = new Picture
             {

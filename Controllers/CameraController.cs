@@ -12,48 +12,45 @@ namespace EyesOnTheNet.Controllers
 {
     public class CameraController : Controller
     {
-        // GET: api/camera
-        // Gets the list of a users cameras
         [HttpGet("api/[controller]")]
         [Authorize]
         public IEnumerable<Camera> GetListOfUserCameras()
         {
-            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            return newEotnRepo.ReturnUserCameras(currentUser);
+            return new EyesOnTheNetRepository().ReturnUserCameras(currentUser);
         }
 
         // GET: api/camera/5/snapshot
         // Pulls an image from a single camera (based on it's table ID) for display
         [HttpGet("api/[controller]/{cameraId:int}/snapshot")]
+        [Authorize]
         public async Task<ActionResult> GetSingleCameraImage(int cameraId)
         {
-            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            Camera returnedUserCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
 
-            if (newEotnRepo.CanAccessThisCamera(currentUser, cameraId))
+            if (returnedUserCamera != null)
             {
-                Picture cameraPicture = await new CameraRequests().GetSnapshot();
+                Picture cameraPicture = await new CameraRequests().GetSnapshot(returnedUserCamera);
                 return File(cameraPicture.data, cameraPicture.encodeType);
             } else
             {
-                return Unauthorized();
+                Picture cameraPicture = await new CameraRequests().GetSnapshot(new Camera { Type = -1 });
+                return File(cameraPicture.data, cameraPicture.encodeType);
             }
         }
 
+/*
         // GET: api/camera/build_database
         // Used for initial database build
         [HttpGet("api/[controller]/build_database")]
         public IActionResult GetBuildDatabase()
         {
             EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
-
             newEotnRepo.AddFakeEverything();
-
             return Ok("Successful DB Creation");
         }
-
-
+*/
 
         // POST api/values
         [HttpPost]
