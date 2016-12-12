@@ -39,7 +39,7 @@ namespace EyesOnTheNet.Controllers
                 return File(cameraPicture.data, cameraPicture.encodeType);
             }
         }
-
+/*
         // GET: api/camera/build_database
         // Used for initial database build
         [HttpGet("api/[controller]/build_database")]
@@ -67,5 +67,6 @@ namespace EyesOnTheNet.Controllers
         public void Delete(int id)
         {
         }
+*/
     }
 }
