@@ -14,7 +14,7 @@ namespace EyesOnTheNet.Controllers
     {
         [HttpGet("api/[controller]")]
         [Authorize]
-        public IEnumerable<Camera> GetListOfUserCameras()
+        public IEnumerable<SimpleCameraUserAccess> GetListOfUserCameras()
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
             return new EyesOnTheNetRepository().ReturnUserCameras(currentUser);
@@ -40,7 +40,6 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
-/*
         // GET: api/camera/build_database
         // Used for initial database build
         [HttpGet("api/[controller]/build_database")]
@@ -50,7 +49,6 @@ namespace EyesOnTheNet.Controllers
             newEotnRepo.AddFakeEverything();
             return Ok("Successful DB Creation");
         }
-*/
 
         // POST api/values
         [HttpPost]
