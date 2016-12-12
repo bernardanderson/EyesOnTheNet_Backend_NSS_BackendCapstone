@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace EyesOnTheNet.Models
 {
-    public class CameraAccess
+    public class SimpleCameraUserAccess
     {
-        public int CameraId { get; set; }
-        public string CameraURI { get; set; }
-        public bool HasAccess { get; set; }
-        public string UserName { get; set; }
+        public string CameraIdHash { get; set; }
+        public string Name { get; set; }
+        public string Location { get; set; }
     }
 }

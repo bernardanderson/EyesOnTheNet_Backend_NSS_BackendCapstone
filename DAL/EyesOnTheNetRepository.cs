@@ -61,36 +61,49 @@ namespace EyesOnTheNet.DAL
                 LoginName= "",
                 LoginPass= "",
                 Private = 1,
-                CanAccess = 0,
+                Location = "800 Fort Negley Blvd, Nashville, TN 37203",
                 CreatedBy = user
             };
             Context.Add(fakeCamera);
 
             var fakeCamera1 = new Camera
             {
-                Name = "Vanderbilt Dean Cam",
+                Name = "Vanderbilt Commons and Dean's Residence",
                 Type = 2,
                 WebAddress = "http://webcams.vanderbilt.edu/thecommons/deans_ctr/deans_ctr_evocam.jpg",
                 LoginName = "",
                 LoginPass = "",
                 Private = 1,
-                CanAccess = 0,
+                Location = "2201 West End Ave, Nashville, TN 37235",
                 CreatedBy = user1
             };
             Context.Add(fakeCamera1);
-
+            
             var fakeCamera2 = new Camera
             {
-                Name = "Vanderbilt New Olin Building",
+                Name = "Wicker Guesthouse",
                 Type = 2,
-                WebAddress = "http://webcams.vanderbilt.edu/newolin/newolin_evocam.jpg",
+                WebAddress = "http://www.floridakeyswebcams.tv/axiscam/wickerguesthouse/wickerguesthouse.jpg",
                 LoginName = "",
                 LoginPass = "",
                 Private = 1,
-                CanAccess = 0,
+                Location = "913 Duval Street, Key West, FL 33040",
                 CreatedBy = user
             };
             Context.Add(fakeCamera2);
+
+            var fakeCamera3 = new Camera
+            {
+                Name = "Southern-most Point in the USA",
+                Type = 2,
+                WebAddress = "http://www.floridakeyswebcams.tv/axiscam/southernmostpoint/southernmostpoint.jpg",
+                LoginName = "",
+                LoginPass = "",
+                Private = 1,
+                Location = "Whitehead St & South St, Key West, FL 33040",
+                CreatedBy = user
+            };
+            Context.Add(fakeCamera3);
             Context.SaveChanges();
         }
         // Checks just the UserName
@@ -130,16 +143,37 @@ namespace EyesOnTheNet.DAL
             return new KeyValuePair<bool, string>(true, "Successfully Registered");
         }
 
-        public List<Camera> ReturnUserCameras(string sentUser)
+        public List<SimpleCameraUserAccess> ReturnUserCameras(string sentUser)
         {
             //Returns the List of Cameras Associated with that User
-            return Context.Cameras.Where(x => x.CreatedBy.Username == sentUser).ToList();
+            List<Camera> foundCameras = Context.Cameras.Where(x => x.CreatedBy.Username == sentUser).ToList();
+            List<SimpleCameraUserAccess> hashedUserCameras = new List<SimpleCameraUserAccess>();
+
+            if (foundCameras == null)
+            {
+                return hashedUserCameras;
+            }
+
+            for (int i = 0; i < foundCameras.Count; i++)
+            {
+                SimpleCameraUserAccess currentCamera = new SimpleCameraUserAccess
+                {
+                    CameraIdHash = foundCameras[i].CameraId.ToString(),
+                    Name = foundCameras[i].Name,
+                    Location = foundCameras[i].Location
+                };
+                hashedUserCameras.Add(currentCamera);
+            }
+            return hashedUserCameras;
         }
 
         public Camera CanAccessThisCamera(string sentUser, int sentCameraId)
         {
             Camera foundCamera = new Camera();
-            foundCamera = this.ReturnUserCameras(sentUser).FirstOrDefault(x => x.CameraId == sentCameraId);
+            foundCamera = Context.Cameras
+                .Where(x => x.CreatedBy.Username == sentUser)
+                .ToList()
+                .FirstOrDefault(x => x.CameraId == sentCameraId);
 
             return foundCamera;
         }
