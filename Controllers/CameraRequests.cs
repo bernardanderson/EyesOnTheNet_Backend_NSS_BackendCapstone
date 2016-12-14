@@ -9,6 +9,8 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc;
 using EyesOnTheNet.Models;
 using EyesOnTheNet.DAL;
+using System.Text;
+using System.Net.Http.Headers;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -27,17 +29,27 @@ namespace EyesOnTheNet.Controllers
         }
         public async Task<Picture> GetSnapshot(Camera sentCamera)
         {
-            string connectionString = ""; 
+            string connectionString = "";
+
+            if (sentCamera.LoginName == null)
+            {
+                sentCamera.LoginName = "";
+            } else if (sentCamera.LoginPass == null)
+            {
+                sentCamera.LoginPass = "";
+            }
 
             switch (sentCamera.Type)
             {
                 case 0:
                     // Foscam Webcam
-                    connectionString = $"{sentCamera.WebAddress}/snapshot.cgi?user={sentCamera.LoginName}&pwd={sentCamera.LoginPass}";
+                    connectionString = $"{sentCamera.WebAddress}/snapshot.cgi?resolution=32";
+                    BasicAuthentication(sentCamera.LoginName, sentCamera.LoginPass);
                     break;
                 case 1:
                     // IPCam Cell Phone App
                     connectionString = $"{sentCamera.WebAddress}/shot.jpg";
+                    BasicAuthentication(sentCamera.LoginName, sentCamera.LoginPass);
                     break;
                 case 2:
                     // Public Webcam
@@ -48,18 +60,25 @@ namespace EyesOnTheNet.Controllers
                     break;
             }
 
-            HttpResponseMessage response = await Client.GetAsync(connectionString); 
+            HttpResponseMessage response = await Client.GetAsync(connectionString);
 
             Picture pictureStream = new Picture
             {
                 data = await response.Content.ReadAsByteArrayAsync(),
-                encodeType = "image/jpeg"
+                encodeType = "image/jpeg",
             };
 
             // The below string will write the received image stream the specified file/location  
             //File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", pictureStream.data);
 
             return pictureStream;
+        }
+
+        // For the Basic Auth header encoding: https://gist.github.com/bryanbarnard/8102915
+        private void BasicAuthentication(string camUsername, string camPassword) 
+        {
+            Byte[] byteArray = Encoding.ASCII.GetBytes($"{camUsername}:{camPassword}");
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
         }
     }
 }

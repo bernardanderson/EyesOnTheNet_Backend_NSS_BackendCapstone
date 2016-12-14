@@ -21,12 +21,31 @@ namespace EyesOnTheNet.DAL
             Context.Database.EnsureCreated();
         }
 
+        // Adds a User to the Db
         private void AddUser(User sentUser)
         {
             sentUser.LastLoginDate = DateTime.Now;
             sentUser.RegistrationDate = DateTime.Now;
 
             Context.Add(sentUser);
+            Context.SaveChanges();
+        }
+
+        // Adds a Camera to the Db
+        private void AddCamera(Camera sentCamera, User sentUser)
+        {
+            Camera newCamera = new Camera
+            {
+                Name = sentCamera.Name,
+                Type = sentCamera.Type,
+                WebAddress = sentCamera.WebAddress,
+                LoginName = sentCamera.LoginName,
+                LoginPass = sentCamera.LoginPass,
+                Private = sentCamera.Private,
+                Location = sentCamera.Location,
+                CreatedBy = sentUser
+            };
+            Context.Add(newCamera);
             Context.SaveChanges();
         }
 
@@ -106,7 +125,7 @@ namespace EyesOnTheNet.DAL
             Context.Add(fakeCamera3);
             Context.SaveChanges();
         }
-        // Checks just the UserName
+        // Checks just the UserName, for initial registration
         public bool CheckUserLogin(string sentUserName)
         {
             var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
@@ -118,7 +137,7 @@ namespace EyesOnTheNet.DAL
             return false; // The user is not found and can be added.
         }
 
-        // Checks both the UserName and Password
+        // Checks both the UserName and Password, for login
         public bool CheckUserLogin(string sentUserName, string sentPassword)
         {
             var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
@@ -131,6 +150,8 @@ namespace EyesOnTheNet.DAL
             }
             return true;
         }
+
+        // For returing an error during the registration process
         public KeyValuePair<bool, string> RegisterUser(User sentUser)
         {
             if (sentUser.Username == "" || sentUser.Password == "")
@@ -143,9 +164,9 @@ namespace EyesOnTheNet.DAL
             return new KeyValuePair<bool, string>(true, "Successfully Registered");
         }
 
+        //Returns the List of Cameras Associated with that User
         public List<SimpleCameraUserAccess> ReturnUserCameras(string sentUser)
         {
-            //Returns the List of Cameras Associated with that User
             List<Camera> foundCameras = Context.Cameras.Where(x => x.CreatedBy.Username == sentUser).ToList();
             List<SimpleCameraUserAccess> hashedUserCameras = new List<SimpleCameraUserAccess>();
 
@@ -156,17 +177,25 @@ namespace EyesOnTheNet.DAL
 
             for (int i = 0; i < foundCameras.Count; i++)
             {
-                SimpleCameraUserAccess currentCamera = new SimpleCameraUserAccess
-                {
-                    CameraIdHash = foundCameras[i].CameraId.ToString(),
-                    Name = foundCameras[i].Name,
-                    Location = foundCameras[i].Location
-                };
+                SimpleCameraUserAccess currentCamera = MakeSimpleUserCameraAccess(foundCameras[i]);
                 hashedUserCameras.Add(currentCamera);
             }
             return hashedUserCameras;
         }
 
+        // Builds a single simple camera to send to the user 
+        public SimpleCameraUserAccess MakeSimpleUserCameraAccess(Camera sentCamera)
+        {
+            SimpleCameraUserAccess currentSimpleCamera = new SimpleCameraUserAccess
+            {
+                CameraIdHash = sentCamera.CameraId.ToString(),
+                Name = sentCamera.Name,
+                Location = sentCamera.Location
+            };
+            return currentSimpleCamera;
+        }
+
+        // Is the user authorized to see these cameras?
         public Camera CanAccessThisCamera(string sentUser, int sentCameraId)
         {
             Camera foundCamera = new Camera();
@@ -176,6 +205,29 @@ namespace EyesOnTheNet.DAL
                 .FirstOrDefault(x => x.CameraId == sentCameraId);
 
             return foundCamera;
+        }
+
+        // Find and return a single camera from the Db
+        public Camera FindAndReturnASingleCamera(string sentUser, string cameraName)
+        {
+            Camera foundCamera = new Camera();
+            foundCamera = Context.Cameras
+                .Where(x => x.CreatedBy.Username == sentUser)
+                .ToList()
+                .FirstOrDefault(x => x.Name == cameraName);
+
+            return foundCamera;
+        }
+
+        public SimpleCameraUserAccess AddCameraToDatabaseProcess(Camera sentCamera, string sentUserName)
+        {
+            //List<Camera> usersCameraList = Context.Cameras.Where(x => x.CreatedBy.Username == sentUserName).ToList();
+
+            User currentUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+            AddCamera(sentCamera, currentUser);
+            Camera newCameraEntry = FindAndReturnASingleCamera(sentUserName, sentCamera.Name);
+
+            return MakeSimpleUserCameraAccess(newCameraEntry);
         }
     }
 }

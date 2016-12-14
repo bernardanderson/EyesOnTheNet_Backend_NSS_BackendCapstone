@@ -47,8 +47,6 @@ namespace EyesOnTheNet.Controllers
             {
                 return NotFound(registrationResult.Value);
             };
-
-            
         }
 
         // PUT api/values/5

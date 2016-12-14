@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using EyesOnTheNet.DAL;
 using EyesOnTheNet.Models;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -37,6 +38,22 @@ namespace EyesOnTheNet.Controllers
             {
                 Picture cameraPicture = await new CameraRequests().GetSnapshot(new Camera { Type = -1 });
                 return File(cameraPicture.data, cameraPicture.encodeType);
+            }
+        }
+        // Post: api/camera/addcamera
+        // Posts a new camera to the database
+        [HttpPost("api/[controller]/addcamera")]
+        [Authorize]
+        public IActionResult Post([FromBody]Camera sentCamera)
+        {
+            if (sentCamera != null)
+            {
+                string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+                SimpleCameraUserAccess returnedSimpleUserCamera = new EyesOnTheNetRepository().AddCameraToDatabaseProcess(sentCamera, currentUser);
+                return Ok(returnedSimpleUserCamera);
+            } else
+            {
+                return StatusCode(417, "Malformed Camera Data");
             }
         }
 /*
