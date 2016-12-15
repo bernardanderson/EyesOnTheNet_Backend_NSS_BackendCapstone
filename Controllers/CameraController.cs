@@ -21,6 +21,22 @@ namespace EyesOnTheNet.Controllers
             return new EyesOnTheNetRepository().ReturnUserCameras(currentUser);
         }
 
+        [HttpGet("api/[controller]/{cameraId:int}/singlecamera")]
+        [Authorize]
+        public IActionResult GetFullSingleCamerasData(int cameraId)
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            Camera returnedCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
+
+            if (returnedCamera != null)
+            {
+                return Ok(returnedCamera);
+            } else
+            {
+                return StatusCode(417, "Camera Data Not Accessible");
+            }
+        }
+
         // GET: api/camera/5/snapshot
         // Pulls an image from a single camera (based on it's table ID) for display
         [HttpGet("api/[controller]/{cameraId:int}/snapshot")]
@@ -65,18 +81,6 @@ namespace EyesOnTheNet.Controllers
             EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
             newEotnRepo.AddFakeEverything();
             return Ok("Successful DB Creation");
-        }
-
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
         }
 
         // DELETE api/values/5

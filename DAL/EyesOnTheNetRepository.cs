@@ -32,21 +32,37 @@ namespace EyesOnTheNet.DAL
         }
 
         // Adds a Camera to the Db
-        private void AddCamera(Camera sentCamera, User sentUser)
+        private void AddOrUpdateCamera(Camera sentCamera, User sentUser)
         {
-            Camera newCamera = new Camera
+            var originalCamera = Context.Cameras.Find(sentCamera.CameraId);
+
+            if (originalCamera != null)
             {
-                Name = sentCamera.Name,
-                Type = sentCamera.Type,
-                WebAddress = sentCamera.WebAddress,
-                LoginName = sentCamera.LoginName,
-                LoginPass = sentCamera.LoginPass,
-                Private = sentCamera.Private,
-                Location = sentCamera.Location,
-                CreatedBy = sentUser
-            };
-            Context.Add(newCamera);
-            Context.SaveChanges();
+                originalCamera.CameraId = sentCamera.CameraId;
+                originalCamera.Name = sentCamera.Name;
+                originalCamera.Type = sentCamera.Type;
+                originalCamera.WebAddress = sentCamera.WebAddress;
+                originalCamera.LoginName = sentCamera.LoginName;
+                originalCamera.LoginPass = sentCamera.LoginPass;
+                originalCamera.Private = sentCamera.Private;
+                originalCamera.Location = sentCamera.Location;
+                originalCamera.CreatedBy = sentUser;
+            } else
+            {
+                Camera newCamera = new Camera
+                {
+                    Name = sentCamera.Name,
+                    Type = sentCamera.Type,
+                    WebAddress = sentCamera.WebAddress,
+                    LoginName = sentCamera.LoginName,
+                    LoginPass = sentCamera.LoginPass,
+                    Private = sentCamera.Private,
+                    Location = sentCamera.Location,
+                    CreatedBy = sentUser
+                };
+                Context.Add(newCamera);
+            }
+                Context.SaveChanges();
         }
 
         public void AddFakeEverything()
@@ -219,13 +235,24 @@ namespace EyesOnTheNet.DAL
             return foundCamera;
         }
 
+        public Camera FindAndReturnASingleCamera(string sentUser, int cameraId)
+        {
+            Camera foundCamera = new Camera();
+            foundCamera = Context.Cameras
+                .Where(x => x.CreatedBy.Username == sentUser)
+                .ToList()
+                .FirstOrDefault(x => x.CameraId == cameraId);
+
+            return foundCamera;
+        }
+
         public SimpleCameraUserAccess AddCameraToDatabaseProcess(Camera sentCamera, string sentUserName)
         {
-            //List<Camera> usersCameraList = Context.Cameras.Where(x => x.CreatedBy.Username == sentUserName).ToList();
-
             User currentUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
-            AddCamera(sentCamera, currentUser);
-            Camera newCameraEntry = FindAndReturnASingleCamera(sentUserName, sentCamera.Name);
+            Camera newCameraEntry = FindAndReturnASingleCamera(sentUserName, sentCamera.CameraId);
+
+            AddOrUpdateCamera(sentCamera, currentUser);
+            newCameraEntry = FindAndReturnASingleCamera(sentUserName, sentCamera.Name);
 
             return MakeSimpleUserCameraAccess(newCameraEntry);
         }
