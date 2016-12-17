@@ -68,8 +68,11 @@ namespace EyesOnTheNet.Controllers
                 encodeType = "image/jpeg",
             };
 
+            // For unique file saving
+            long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            string newSaveString = $"{sentCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
             // The below string will write the received image stream the specified file/location  
-            //File.WriteAllBytes("/home/banderso/NSS_Backend/eyesonthenet/images/image.jpg", pictureStream.data);
+            // File.WriteAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{newSaveString}", pictureStream.data);
 
             return pictureStream;
         }
