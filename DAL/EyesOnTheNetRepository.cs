@@ -217,7 +217,6 @@ namespace EyesOnTheNet.DAL
             Camera foundCamera = new Camera();
             foundCamera = Context.Cameras
                 .Where(x => x.CreatedBy.Username == sentUser)
-                .ToList()
                 .FirstOrDefault(x => x.CameraId == sentCameraId);
 
             return foundCamera;

@@ -21,6 +21,7 @@ namespace EyesOnTheNet.Controllers
             return new EyesOnTheNetRepository().ReturnUserCameras(currentUser);
         }
 
+        // Retrives the full Camera Data for a single camera so it can be edited
         [HttpGet("api/[controller]/{cameraId:int}/singlecamera")]
         [Authorize]
         public IActionResult GetFullSingleCamerasData(int cameraId)
