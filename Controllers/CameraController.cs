@@ -73,22 +73,33 @@ namespace EyesOnTheNet.Controllers
                 return StatusCode(417, "Malformed Camera Data");
             }
         }
-/*
-        // GET: api/camera/build_database
-        // Used for initial database build
-        [HttpGet("api/[controller]/build_database")]
-        public IActionResult GetBuildDatabase()
-        {
-            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
-            newEotnRepo.AddFakeEverything();
-            return Ok("Successful DB Creation");
-        }
+        /*
+                // GET: api/camera/build_database
+                // Used for initial database build
+                [HttpGet("api/[controller]/build_database")]
+                public IActionResult GetBuildDatabase()
+                {
+                    EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
+                    newEotnRepo.AddFakeEverything();
+                    return Ok("Successful DB Creation");
+                }
 
+        */
         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("api/[controller]/{cameraId:int}")]
+        [Authorize]
+        public IActionResult DeleteCamera(int cameraId)
         {
-        }
-*/
+                string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+                Camera returnedDeletedCamera = new EyesOnTheNetRepository().RemoveCameraFromDatabase(currentUser, cameraId);
+
+            if (returnedDeletedCamera != null)
+            {
+                return Ok(returnedDeletedCamera);
+            } else
+            {
+                return StatusCode(417, "Camera Not Removed");
+            }
+        }        
     }
 }

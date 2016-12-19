@@ -255,5 +255,19 @@ namespace EyesOnTheNet.DAL
 
             return MakeSimpleUserCameraAccess(newCameraEntry);
         }
+
+        public Camera RemoveCameraFromDatabase(string sentUserName, int sentCameraId)
+        {
+            User currentUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+            Camera cameraToDelete = CanAccessThisCamera(sentUserName, sentCameraId);
+
+            if (cameraToDelete != null)
+            {
+                Context.Cameras.Remove(cameraToDelete);
+                Context.SaveChanges();
+            }
+
+            return cameraToDelete;
+        }
     }
 }
