@@ -11,6 +11,7 @@ using EyesOnTheNet.Models;
 using EyesOnTheNet.DAL;
 using System.Text;
 using System.Net.Http.Headers;
+using EyesOnTheNet.Private;
 
 namespace EyesOnTheNet.Controllers
 {
@@ -69,10 +70,27 @@ namespace EyesOnTheNet.Controllers
             };
 
             // For unique file saving
-            long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-            string newSaveString = $"{sentCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
+            //long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            //string newSaveString = $"{sentCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
             // The below string will write the received image stream the specified file/location  
             // File.WriteAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{newSaveString}", pictureStream.data);
+
+            return pictureStream;
+        }
+
+        public async Task<Picture> GetGoogleMap(Camera sentCamera, int sentZoomLevel) {
+
+            string tempLocationString = sentCamera.Location.Replace(" ", "+");
+            string connectionString = $"https://maps.googleapis.com/maps/api/staticmap?zoom={sentZoomLevel}&size=300x500&markers=color:red%7C${tempLocationString}&key={PrivateParameters.GoogleStaticMap}";
+
+            // May Need Cert for HTTPS
+            HttpResponseMessage response = await Client.GetAsync(connectionString);
+
+            Picture pictureStream = new Picture
+            {
+                data = await response.Content.ReadAsByteArrayAsync(),
+                encodeType = "image/png",
+            };
 
             return pictureStream;
         }

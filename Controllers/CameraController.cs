@@ -57,6 +57,32 @@ namespace EyesOnTheNet.Controllers
                 return File(cameraPicture.data, cameraPicture.encodeType);
             }
         }
+
+        // GET: api/camera/1/7/googlemap
+        // Pulls the Google Map for a single camera and it's location
+        [HttpGet("api/[controller]/{cameraId:int}/{zoomLevel:int}/googlemap")]
+        [Authorize]
+        public async Task<ActionResult> GetGoogleMapsStaticImage(int cameraId, int zoomLevel)
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            Camera returnedUserCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
+
+            if (returnedUserCamera != null)
+            {
+                Picture cameraPicture = await new CameraRequests().GetGoogleMap(returnedUserCamera, zoomLevel);
+                return File(cameraPicture.data, cameraPicture.encodeType);
+            }
+            else
+            {
+                // Broken Picture, if user can't access Google Map
+                Picture cameraPicture = await new CameraRequests().GetSnapshot(new Camera { Type = -1 });
+                return File(cameraPicture.data, cameraPicture.encodeType);
+            }
+        }
+
+
+
+
         // Post: api/camera/addcamera
         // Posts a new camera to the database
         [HttpPost("api/[controller]/addcamera")]
