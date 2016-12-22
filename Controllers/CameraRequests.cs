@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.Net.Http.Headers;
-using Microsoft.AspNetCore.Mvc;
 using EyesOnTheNet.Models;
-using EyesOnTheNet.DAL;
 using System.Text;
 using System.Net.Http.Headers;
 using EyesOnTheNet.Private;
@@ -21,13 +14,7 @@ namespace EyesOnTheNet.Controllers
         //  http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
         private static HttpClient Client = new HttpClient();
 
-        public async Task<string> GetParameters()
-        {
-            HttpResponseMessage response = await Client.GetAsync("http://192.168.0.223/get_status.cgi");
-            var combinedResponse = await response.Content.ReadAsStringAsync();
-
-            return combinedResponse;
-        }
+        // Gets a single image from a selected camera source
         public async Task<Picture> GetSnapshot(Camera sentCamera)
         {
             string connectionString = "";
@@ -78,6 +65,7 @@ namespace EyesOnTheNet.Controllers
             return pictureStream;
         }
 
+        // Gets a static Google Map using a protected API key
         public async Task<Picture> GetGoogleMap(Camera sentCamera, int sentZoomLevel) {
 
             string tempLocationString = sentCamera.Location.Replace(" ", "+");
@@ -91,11 +79,10 @@ namespace EyesOnTheNet.Controllers
                 data = await response.Content.ReadAsByteArrayAsync(),
                 encodeType = "image/png",
             };
-
             return pictureStream;
         }
 
-        // For the Basic Auth header encoding: https://gist.github.com/bryanbarnard/8102915
+        // For the Basic Auth header encoding for cameras that require it: https://gist.github.com/bryanbarnard/8102915
         private void BasicAuthentication(string camUsername, string camPassword) 
         {
             Byte[] byteArray = Encoding.ASCII.GetBytes($"{camUsername}:{camPassword}");

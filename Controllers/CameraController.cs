@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using EyesOnTheNet.DAL;
 using EyesOnTheNet.Models;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Http;
 
 namespace EyesOnTheNet.Controllers
 {
+    // Returns list of Users Cameras
     public class CameraController : Controller
     {
         [HttpGet("api/[controller]")]
@@ -99,6 +97,8 @@ namespace EyesOnTheNet.Controllers
                 return StatusCode(417, "Malformed Camera Data");
             }
         }
+
+        // Allows the initial creation and population of the database
         /*
                 // GET: api/camera/build_database
                 // Used for initial database build
@@ -111,7 +111,8 @@ namespace EyesOnTheNet.Controllers
                 }
 
         */
-        // DELETE api/values/5
+
+        // DELETE api/camera/5
         [HttpDelete("api/[controller]/{cameraId:int}")]
         [Authorize]
         public IActionResult DeleteCamera(int cameraId)
