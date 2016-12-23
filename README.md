@@ -1,39 +1,43 @@
-# Welcome to ASP.NET Core
+## NSS Backend Capstone Part-1: "EyesOnTheNet Backend Web API"
+#### (See the <a href="https://github.com/bernardanderson/EyesOnTheNet_Frontend_NSS_BackendCapstone">"Part 2"</a> for the Frontend Component)
+ 
 
-We've made some big updates in this release, so it’s **important** that you spend a few minutes to learn what’s new.
+### Specs:
+> The idea behind this project was to build an application to allow secure access to webcameras which may have no or insecure authentication methods. A number of older webcameras are "out-in-the-wild" that have Authentication methods that are known to be easily hackable.  With 'EyesOnTheNet' a user can access webcameras via this more secure Backend Web API interface in order to still be able to access antiquated webcameras without having to put the actual webcameras on the public internet. This application was extended to allow for public webcamera access as well as displaying the physical location of the user entered camera via GoogleMaps. 
+> This is the "Part 1" Backend portion of the project. See <a href="https://github.com/bernardanderson/EyesOnTheNet_Frontend_NSS_BackendCapstone">"Part 2"</a> for the Frontend user interface portion.
 
-You've created a new ASP.NET Core project. [Learn what's new](https://go.microsoft.com/fwlink/?LinkId=518016)
+   
+### Main Technologies Used:
+> 1. DotNet Core (in Linux)
+> 1. MySQL Server (in Linux)
+> 1. Entity Framework/LINQ 
+> 1. Json Web Tokens (for Authorization)
+> 1. GoogleMaps (for Camera location information)
+> 1. FileIO (for picture retrieval and transport)
 
-## This application consists of:
 
-*   Sample pages using ASP.NET Core MVC
-*   [Bower](https://go.microsoft.com/fwlink/?LinkId=518004) for managing client-side libraries
-*   Theming using [Bootstrap](https://go.microsoft.com/fwlink/?LinkID=398939)
+### Final Result:
+##### A secure WEB API backend interface allowing users access to web cams without compromising the security of the camera or the IP address.
 
-## How to
+> This Backend component allows a user access to web camera images via standard HTTP Requests.
+> With this a user can:
+> 1. Generate/Retrieve a Json web token for authentication
+> 1. Manipulate a MySQL Database to store/retrieve/edit a personal list a public/private webcams.
+> 1. Retrieve a single snapshot from one of the user's webcameras.
+> 1. Retrieve a static Google Map image of a physical location for a webcam. 
+> 1. NOTE: All webcam/GoogleMap traffic is done through the Backend API. The user sees none of the actual traffic to the webcameras. 
 
-*   [Add a Controller and View](https://go.microsoft.com/fwlink/?LinkID=398600)
-*   [Add an appsetting in config and access it in app.](https://go.microsoft.com/fwlink/?LinkID=699562)
-*   [Manage User Secrets using Secret Manager.](https://go.microsoft.com/fwlink/?LinkId=699315)
-*   [Use logging to log a message.](https://go.microsoft.com/fwlink/?LinkId=699316)
-*   [Add packages using NuGet.](https://go.microsoft.com/fwlink/?LinkId=699317)
-*   [Add client packages using Bower.](https://go.microsoft.com/fwlink/?LinkId=699318)
-*   [Target development, staging or production environment.](https://go.microsoft.com/fwlink/?LinkId=699319)
+### How to run:
+```
+1. Install the <a href="https://www.microsoft.com/net/core">DotNet Core</a> package
+2. Download/Clone this repo  
+3. At the base directory run `dotnet restore` to store the required packages  
+4. At the base directory run `dotnet run` to start the application
+5. NOTE: For the full experience, the Frontend portion needs to be utilized to access   
+```
 
-## Overview
+### Specs By:
+[Bernie Anderson](https://github.com/bernardanderson) 
 
-*   [Conceptual overview of what is ASP.NET Core](https://go.microsoft.com/fwlink/?LinkId=518008)
-*   [Fundamentals of ASP.NET Core such as Startup and middleware.](https://go.microsoft.com/fwlink/?LinkId=699320)
-*   [Working with Data](https://go.microsoft.com/fwlink/?LinkId=398602)
-*   [Security](https://go.microsoft.com/fwlink/?LinkId=398603)
-*   [Client side development](https://go.microsoft.com/fwlink/?LinkID=699321)
-*   [Develop on different platforms](https://go.microsoft.com/fwlink/?LinkID=699322)
-*   [Read more on the documentation site](https://go.microsoft.com/fwlink/?LinkID=699323)
-
-## Run & Deploy
-
-*   [Run your app](https://go.microsoft.com/fwlink/?LinkID=517851)
-*   [Run tools such as EF migrations and more](https://go.microsoft.com/fwlink/?LinkID=517853)
-*   [Publish to Microsoft Azure Web Apps](https://go.microsoft.com/fwlink/?LinkID=398609)
-
-We would love to hear your [feedback](https://go.microsoft.com/fwlink/?LinkId=518015)
+### Contributors:
+[Bernie Anderson](https://github.com/bernardanderson) 
