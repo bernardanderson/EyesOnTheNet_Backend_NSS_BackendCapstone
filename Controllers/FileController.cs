@@ -14,7 +14,15 @@ namespace EyesOnTheNet.Controllers
         public void SaveSingleCameraPicture(int cameraId, int timerInterval)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            new FileRequests(currentUser, cameraId).StartTimer(timerInterval);
+            new FileRequests(currentUser, cameraId).StartTimer(timerInterval); // For Backend Timed FileSave
         }
+
+        [HttpGet("api/[controller]/{cameraId:int}")]
+        public void SaveSingleCameraPicture(int cameraId)
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            new FileRequests(currentUser, cameraId).SaveCameraPhoto();
+        }
+
     }
 }

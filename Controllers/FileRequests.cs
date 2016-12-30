@@ -32,5 +32,17 @@ namespace EyesOnTheNet.Controllers
             string newSaveString = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
             File.WriteAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{newSaveString}", singleCameraPicture.data);
         }
+
+        public async void SaveCameraPhoto()
+        {
+            CameraRequests myCameraRequest = new CameraRequests();
+            Picture singleCameraPicture = await myCameraRequest.GetSnapshot(userCamera);
+
+            long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            string newSaveString = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
+            File.WriteAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{newSaveString}", singleCameraPicture.data);
+        }
+
+
     }
 }
