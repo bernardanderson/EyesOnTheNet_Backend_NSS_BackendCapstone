@@ -142,7 +142,7 @@ namespace EyesOnTheNet.DAL
         // Checks just the UserName, for initial registration
         public bool CheckUserLogin(string sentUserName)
         {
-            var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+            User foundUser = ReturnUser(sentUserName);
 
             if (foundUser != null)
             {
@@ -154,7 +154,8 @@ namespace EyesOnTheNet.DAL
         // Checks both the UserName and Password, for login
         public bool CheckUserLogin(string sentUserName, string sentPassword)
         {
-            var foundUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+            User foundUser = ReturnUser(sentUserName);
+
             if (foundUser == null)
             {
                 return false;
@@ -243,9 +244,15 @@ namespace EyesOnTheNet.DAL
             return foundCamera;
         }
 
+        public User ReturnUser (string sentUserName)
+        {
+            return Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+        }
+
+
         public SimpleCameraUserAccess AddCameraToDatabaseProcess(Camera sentCamera, string sentUserName)
         {
-            User currentUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+            User currentUser = ReturnUser(sentUserName);
             Camera newCameraEntry = FindAndReturnASingleCamera(sentUserName, sentCamera.CameraId);
 
             AddOrUpdateCamera(sentCamera, currentUser);
@@ -256,7 +263,7 @@ namespace EyesOnTheNet.DAL
 
         public Camera RemoveCameraFromDatabase(string sentUserName, int sentCameraId)
         {
-            User currentUser = Context.Users.FirstOrDefault(u => u.Username == sentUserName);
+            User currentUser = ReturnUser(sentUserName);
             Camera cameraToDelete = CanAccessThisCamera(sentUserName, sentCameraId);
 
             if (cameraToDelete != null)
@@ -267,5 +274,22 @@ namespace EyesOnTheNet.DAL
 
             return cameraToDelete;
         }
+
+        public Photo AddFilesToDatabase(string sentUserName, int sentCameraId, Photo sentPhotoToAddToDatabase) 
+        {
+            // Trying to build the complete Photo object for entry into the DB using entity confuses entity into thinking 
+            //  that the Camera and User are new things and trys to add them as such.  You need to "show" entity that the
+            //  Camera and User already exist (by finding it in the DB) and adding it the the photo object just before 
+            //  adding it to the DB.  See Holland Risley's answer below.
+            //  http://stackoverflow.com/questions/15394207/entityframework-duplicating-when-calling-savechanges
+            sentPhotoToAddToDatabase.CreatedBy = ReturnUser(sentUserName);
+            sentPhotoToAddToDatabase.CameraSource = FindAndReturnASingleCamera(sentUserName, sentCameraId);
+
+            Context.Add(sentPhotoToAddToDatabase);
+            Context.SaveChanges();
+
+            return sentPhotoToAddToDatabase;
+        }
+
     }
 }

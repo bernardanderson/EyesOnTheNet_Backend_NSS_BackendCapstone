@@ -99,18 +99,15 @@ namespace EyesOnTheNet.Controllers
         }
 
         // Allows the initial creation and population of the database
-        /*
                 // GET: api/camera/build_database
                 // Used for initial database build
-                [HttpGet("api/[controller]/build_database")]
-                public IActionResult GetBuildDatabase()
-                {
-                    EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
-                    newEotnRepo.AddFakeEverything();
-                    return Ok("Successful DB Creation");
-                }
-
-        */
+        [HttpGet("api/[controller]/build_database")]
+        public IActionResult GetBuildDatabase()
+        {
+            EyesOnTheNetRepository newEotnRepo = new EyesOnTheNetRepository();
+            newEotnRepo.AddFakeEverything();
+            return Ok("Successful DB Creation");
+        }
 
         // DELETE api/camera/5
         [HttpDelete("api/[controller]/{cameraId:int}")]
