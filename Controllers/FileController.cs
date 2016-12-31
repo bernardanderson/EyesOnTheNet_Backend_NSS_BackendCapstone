@@ -9,6 +9,8 @@ namespace EyesOnTheNet.Controllers
 {
     public class FileController : Controller
     {
+        // API Access to have the BackEnd repeat the CamStream Saving
+        /*
         // GET api/file/5
         [HttpGet("api/[controller]/{cameraId:int}/{timerInterval:int}")]
         public void SaveSingleCameraPicture(int cameraId, int timerInterval)
@@ -16,7 +18,9 @@ namespace EyesOnTheNet.Controllers
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
             new FileRequests(currentUser, cameraId).StartTimer(timerInterval); // For Backend Timed FileSave
         }
+        */
 
+        // API Access point to save a single camera snapshot to the HD and DB
         [HttpGet("api/[controller]/{cameraId:int}")]
         public void SaveSingleCameraPicture(int cameraId)
         {
