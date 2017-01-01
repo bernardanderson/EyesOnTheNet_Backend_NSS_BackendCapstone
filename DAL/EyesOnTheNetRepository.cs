@@ -283,12 +283,31 @@ namespace EyesOnTheNet.DAL
             //  adding it to the DB.  See Holland Risley's answer below.
             //  http://stackoverflow.com/questions/15394207/entityframework-duplicating-when-calling-savechanges
             sentPhotoToAddToDatabase.CreatedBy = ReturnUser(sentUserName);
-            sentPhotoToAddToDatabase.CameraSource = FindAndReturnASingleCamera(sentUserName, sentCameraId);
+            sentPhotoToAddToDatabase.CameraId = sentCameraId;
 
             Context.Add(sentPhotoToAddToDatabase);
             Context.SaveChanges();
 
             return sentPhotoToAddToDatabase;
+        }
+
+        public List<SimplePhoto> GetUserPhotoList(string userName)
+        {
+            List<Photo> usersPhotoList = Context.Photos.Where(u => u.CreatedBy.Username == userName).ToList();
+            List<SimplePhoto> userSimplePhotoList = new List<SimplePhoto>();
+
+            for (int i = 0; i < usersPhotoList.Count(); i++)
+            {
+                SimplePhoto tempSimplePhoto = new SimplePhoto();
+
+                tempSimplePhoto.CameraId = usersPhotoList[i].CameraId;
+                tempSimplePhoto.CameraName = Context.Cameras.FirstOrDefault(u => u.CameraId == usersPhotoList[i].CameraId).Name;
+                tempSimplePhoto.Filename = usersPhotoList[i].Filename;
+
+                userSimplePhotoList.Add(tempSimplePhoto);
+            }
+
+            return userSimplePhotoList;
         }
 
     }

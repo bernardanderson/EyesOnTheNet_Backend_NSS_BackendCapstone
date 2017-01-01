@@ -7,14 +7,10 @@ using System.Threading.Tasks;
 
 namespace EyesOnTheNet.Models
 {
-    public class Photo
+    public class SimplePhoto
     {
-        [Key]
-        public int PhotoId { get; set; }
-        public string Filename { get; set; }
-        public string FileLocation{ get; set; }
-        public long CreationDate { get; set; }
         public int CameraId { get; set; }
-        public virtual User CreatedBy { get; set; }
+        public string CameraName { get; set; }
+        public string Filename { get; set; }
     }
 }
