@@ -321,5 +321,10 @@ namespace EyesOnTheNet.DAL
             return userSimplePhotoList;
         }
 
+        public string ReturnFileName(int sentPhotoId)
+        {
+            return Context.Photos.FirstOrDefault(p => p.PhotoId == sentPhotoId).Filename;
+        }
+
     }
 }

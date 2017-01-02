@@ -70,5 +70,25 @@ namespace EyesOnTheNet.Controllers
             EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
             return newEOTN.GetUserPhotoList(userName);
         }
+
+        public Picture GetDvrPhoto(int sentPhotoId)
+        {
+            EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
+
+            string currentFilename = "faulty.jpg";
+
+            if (sentPhotoId != -1)
+            {
+                currentFilename = newEOTN.ReturnFileName(sentPhotoId);
+            }
+
+            Picture dvrPhotoPic = new Picture {
+                data = File.ReadAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{currentFilename}"),
+                encodeType = "image/jpeg"
+            };
+
+            return dvrPhotoPic;
+        }
+
     }
 }
