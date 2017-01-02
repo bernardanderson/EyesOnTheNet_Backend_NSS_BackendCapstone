@@ -50,7 +50,7 @@ namespace EyesOnTheNet.Controllers
             CameraRequests myCameraRequest = new CameraRequests();
             Picture singleCameraPicture = await myCameraRequest.GetSnapshot(userCamera);
             EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
-            long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            long currentDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             string newFileName = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
             string newSavePath = $"/home/banderso/NSS_Backend/eyesonthenet/images/";
