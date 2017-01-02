@@ -23,4 +23,5 @@ namespace EyesOnTheNet.Models
         [ForeignKey("User")]
         public virtual User CreatedBy { get; set; }
     }
+
 }

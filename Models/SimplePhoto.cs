@@ -11,6 +11,6 @@ namespace EyesOnTheNet.Models
     {
         public int CameraId { get; set; }
         public string CameraName { get; set; }
-        public string Filename { get; set; }
+        public List<KeyValuePair<int, long>> PhotoIdTime { get; set; }
     }
 }

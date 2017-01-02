@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using EyesOnTheNet.DAL;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 using EyesOnTheNet.Models;
 using System.Collections.Generic;
 
@@ -23,6 +24,7 @@ namespace EyesOnTheNet.Controllers
 
         // API Access point to save a single camera snapshot to the HD and DB
         [HttpGet("api/[controller]/{cameraId:int}")]
+        [Authorize]
         public void SaveSingleCameraPicture(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
@@ -31,6 +33,7 @@ namespace EyesOnTheNet.Controllers
 
         // API Access point to save a single camera snapshot to the HD and DB
         [HttpGet("api/[controller]/photolist")]
+        [Authorize]
         public IActionResult ReturnRecordedCameraInfo()
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;

@@ -14,7 +14,12 @@ namespace EyesOnTheNet.Models
         public string Filename { get; set; }
         public string FileLocation{ get; set; }
         public long CreationDate { get; set; }
+        [ForeignKey("Camera")]
         public int CameraId { get; set; }
-        public virtual User CreatedBy { get; set; }
+        public virtual Camera Camera { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
+
     }
 }

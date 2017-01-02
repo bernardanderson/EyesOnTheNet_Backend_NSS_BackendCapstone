@@ -78,9 +78,6 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
-
-
-
         // Post: api/camera/addcamera
         // Posts a new camera to the database
         [HttpPost("api/[controller]/addcamera")]

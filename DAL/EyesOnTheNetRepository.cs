@@ -249,7 +249,6 @@ namespace EyesOnTheNet.DAL
             return Context.Users.FirstOrDefault(u => u.Username == sentUserName);
         }
 
-
         public SimpleCameraUserAccess AddCameraToDatabaseProcess(Camera sentCamera, string sentUserName)
         {
             User currentUser = ReturnUser(sentUserName);
@@ -282,8 +281,8 @@ namespace EyesOnTheNet.DAL
             //  Camera and User already exist (by finding it in the DB) and adding it the the photo object just before 
             //  adding it to the DB.  See Holland Risley's answer below.
             //  http://stackoverflow.com/questions/15394207/entityframework-duplicating-when-calling-savechanges
-            sentPhotoToAddToDatabase.CreatedBy = ReturnUser(sentUserName);
-            sentPhotoToAddToDatabase.CameraId = sentCameraId;
+            sentPhotoToAddToDatabase.User = ReturnUser(sentUserName);
+            sentPhotoToAddToDatabase.Camera = Context.Cameras.FirstOrDefault(c => c.CameraId == sentCameraId);
 
             Context.Add(sentPhotoToAddToDatabase);
             Context.SaveChanges();
@@ -291,22 +290,34 @@ namespace EyesOnTheNet.DAL
             return sentPhotoToAddToDatabase;
         }
 
+        // Builds the Object of Cameras and their photos with capture times
         public List<SimplePhoto> GetUserPhotoList(string userName)
         {
-            List<Photo> usersPhotoList = Context.Photos.Where(u => u.CreatedBy.Username == userName).ToList();
+            // Gets the List of Photos and groups them by CameraId
+            List<IGrouping<int, Photo>> tempGrouping = Context.Photos.Where(u => u.User.Username == userName).GroupBy(m => m.CameraId).ToList();
+            // Get the complete list of Cameras (to get the Camera Names)
+            IQueryable<Camera> usersCameraList = Context.Cameras.Where(c => c.CreatedBy.Username == userName);
             List<SimplePhoto> userSimplePhotoList = new List<SimplePhoto>();
 
-            for (int i = 0; i < usersPhotoList.Count(); i++)
+            for (int i = 0; i < tempGrouping.Count(); i++)
             {
-                SimplePhoto tempSimplePhoto = new SimplePhoto();
+                SimplePhoto tempSimplePhoto = new SimplePhoto
+                {
+                    CameraId = tempGrouping[i].Key,
+                    CameraName = usersCameraList.FirstOrDefault(c => c.CameraId == tempGrouping[i].Key).Name,
+                };
 
-                tempSimplePhoto.CameraId = usersPhotoList[i].CameraId;
-                tempSimplePhoto.CameraName = Context.Cameras.FirstOrDefault(u => u.CameraId == usersPhotoList[i].CameraId).Name;
-                tempSimplePhoto.Filename = usersPhotoList[i].Filename;
+                var tempList = new List<KeyValuePair<int, long>>();
 
+                foreach (var singlePhoto in tempGrouping[i])
+                {
+                    KeyValuePair<int, long> tempKeyValue = new KeyValuePair<int, long>(singlePhoto.PhotoId, singlePhoto.CreationDate);
+                    tempList.Add(tempKeyValue);
+                }
+
+                tempSimplePhoto.PhotoIdTime = tempList;
                 userSimplePhotoList.Add(tempSimplePhoto);
             }
-
             return userSimplePhotoList;
         }
 
