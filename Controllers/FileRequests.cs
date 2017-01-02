@@ -1,13 +1,20 @@
 ﻿using EyesOnTheNet.DAL;
 using EyesOnTheNet.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace EyesOnTheNet.Controllers
 {
     public class FileRequests
     {
+        public FileRequests(string sentUserName)
+        {
+            userName = sentUserName;
+        }
+
         public FileRequests(string sentUserName, int sentCameraId)
         {
             userName = sentUserName;
@@ -43,7 +50,7 @@ namespace EyesOnTheNet.Controllers
             CameraRequests myCameraRequest = new CameraRequests();
             Picture singleCameraPicture = await myCameraRequest.GetSnapshot(userCamera);
             EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
-            long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            long currentDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             string newFileName = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
             string newSavePath = $"/home/banderso/NSS_Backend/eyesonthenet/images/";
@@ -58,6 +65,10 @@ namespace EyesOnTheNet.Controllers
             newEOTN.AddFilesToDatabase(userName, userCamera.CameraId, currentPhoto);
         }
 
-
+        public List<SimplePhoto> SendPhotoList()
+        {
+            EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
+            return newEOTN.GetUserPhotoList(userName);
+        }
     }
 }
