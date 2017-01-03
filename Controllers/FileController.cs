@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
 using EyesOnTheNet.Models;
 using System.Collections.Generic;
+using EyesOnTheNet.DAL;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -53,6 +54,24 @@ namespace EyesOnTheNet.Controllers
             {
                 // Db Error
                 return StatusCode(417, "Photo Data Not Accessible");
+            }
+        }
+
+        // DELETE api/camera/5
+        [HttpDelete("api/[controller]/{photoId:int}")]
+        [Authorize]
+        public IActionResult DeleteCameraPhoto(int photoId)
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            Photo returnedDeletedCameraPhoto = new EyesOnTheNetRepository().RemoveCameraPhotoFromDatabase(currentUser, photoId);
+
+            if (returnedDeletedCameraPhoto != null)
+            {
+                return Ok(returnedDeletedCameraPhoto);
+            }
+            else
+            {
+                return StatusCode(417, "Photo Not Removed");
             }
         }
     }
