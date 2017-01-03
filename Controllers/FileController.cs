@@ -63,7 +63,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult DeleteCameraPhoto(int photoId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Photo returnedDeletedCameraPhoto = new EyesOnTheNetRepository().RemoveCameraPhotoFromDatabase(currentUser, photoId);
+            Photo returnedDeletedCameraPhoto = new FileRequests(currentUser).DeleteSinglePhoto(photoId);
 
             if (returnedDeletedCameraPhoto != null)
             {
