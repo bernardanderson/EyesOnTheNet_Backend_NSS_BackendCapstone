@@ -24,26 +24,6 @@ namespace EyesOnTheNet.Controllers
         private string userName { get; set; }
         private Camera userCamera { get; set; }
 
-        // The below commented code is for repeatedly saving a camera snapshot as a file using the BackEnd as the timer 
-        /*
-        public void StartTimer(int timerInterval)
-        {
-            TimerCallback newCallback = new TimerCallback(SaveCameraPhoto);
-            Timer newTimer = new Timer(newCallback, null, 0, timerInterval);
-
-        }
-
-        private async void SaveCameraPhoto(object obj)
-        {
-            CameraRequests myCameraRequest = new CameraRequests();
-            Picture singleCameraPicture = await myCameraRequest.GetSnapshot(userCamera);
-
-            long currentDateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-            string newSaveString = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
-            File.WriteAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{newSaveString}", singleCameraPicture.data);
-        }
-        */
-
         // This is for saving a single camera snapshot as a file and in the DB
         public async void SaveCameraPhoto()
         {
@@ -67,8 +47,20 @@ namespace EyesOnTheNet.Controllers
 
         public List<SimplePhoto> SendPhotoList()
         {
-            EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
-            return newEOTN.GetUserPhotoList(userName);
+            return new EyesOnTheNetRepository().GetUserPhotoList(userName);
         }
+
+        public Picture GetDvrPhoto(int sentPhotoId)
+        {
+            string currentFilename = new EyesOnTheNetRepository().ReturnFileName(userName, sentPhotoId);
+
+            Picture dvrPhotoPic = new Picture {
+                data = File.ReadAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{currentFilename}"),
+                encodeType = "image/jpeg"
+            };
+
+            return dvrPhotoPic;
+        }
+
     }
 }
