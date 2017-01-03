@@ -62,5 +62,17 @@ namespace EyesOnTheNet.Controllers
             return dvrPhotoPic;
         }
 
+        public Photo DeleteSinglePhoto(int sentPhotoId)
+        {
+            Photo deletedPhoto = new EyesOnTheNetRepository().RemoveCameraPhotoFromDatabase(userName, sentPhotoId);
+
+            if (deletedPhoto != null)
+            {
+                File.Delete($"/home/banderso/NSS_Backend/eyesonthenet/images/{deletedPhoto.Filename}");
+            }
+
+            return deletedPhoto;
+        }
+
     }
 }

@@ -325,7 +325,6 @@ namespace EyesOnTheNet.DAL
         public string ReturnFileName(string sentUserName, int sentPhotoId)
         {
             // Check to see if the user has access to a picture.  Also catches for PhotoIds that don't exist.
-            //Photo singlePhoto = Context.Photos.Where(u => u.User.Username == sentUserName).FirstOrDefault(p => p.PhotoId == sentPhotoId);
             Photo singlePhoto = Context.Photos.Where(p => p.PhotoId == sentPhotoId).FirstOrDefault(u => u.User.Username == sentUserName);
 
             if (singlePhoto != null)
@@ -337,7 +336,6 @@ namespace EyesOnTheNet.DAL
 
         public Photo RemoveCameraPhotoFromDatabase(string sentUserName, int sentPhotoId)
         {
-            //Photo singlePhotoToDelete = Context.Photos.Where(u => u.User.Username == sentUserName).FirstOrDefault(p => p.PhotoId == sentPhotoId);
             Photo singlePhotoToDelete = Context.Photos.Where(p => p.PhotoId == sentPhotoId).FirstOrDefault(u => u.User.Username == sentUserName);
 
             if (singlePhotoToDelete != null)
