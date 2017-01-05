@@ -80,9 +80,17 @@ namespace EyesOnTheNet.TokenProvider
                 access_token = encodedJwt,
                 expires_in = (int)_options.Expiration.TotalSeconds
             };
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
-            //
+            
+            // This builds a server-side cookie to returning to the browser
+            CookieOptions options = new CookieOptions
+            {
+                Domain = ".eyesonthenet.com",
+                Path = "/",
+                HttpOnly = true,
+            };
+
+            context.Response.StatusCode = 200;
+            context.Response.Cookies.Append("access_token", encodedJwt, options);
         }
 
         private Task<ClaimsIdentity> GetIdentity(string username, string password)

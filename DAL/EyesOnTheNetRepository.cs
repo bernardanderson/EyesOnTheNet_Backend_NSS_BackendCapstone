@@ -74,16 +74,6 @@ namespace EyesOnTheNet.DAL
                 RegistrationDate = DateTime.Now,
             };
             Context.Add(user);
-
-            var user1 = new User
-            {
-                Username = "wewe",
-                Password = "wewe",
-                Email = "wewe@gmail.com",
-                LastLoginDate = DateTime.Now,
-                RegistrationDate = DateTime.Now,
-            };
-
             Context.SaveChanges();
 
             var fakeCamera = new Camera
@@ -108,7 +98,7 @@ namespace EyesOnTheNet.DAL
                 LoginPass = "",
                 Private = 1,
                 Location = "2201 West End Ave, Nashville, TN 37235",
-                CreatedBy = user1
+                CreatedBy = user
             };
             Context.Add(fakeCamera1);
             

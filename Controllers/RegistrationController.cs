@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using EyesOnTheNet.Models;
 using EyesOnTheNet.DAL;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Net.Http;
+using Microsoft.Net.Http.Headers;
 
 // Controls access to the Registration of a new user
 namespace EyesOnTheNet.Controllers

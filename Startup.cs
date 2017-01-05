@@ -89,7 +89,8 @@ namespace EyesOnTheNet
             // Technically not part of the JWT middleware but needed for CORS acc
             app.UseCors(builder =>
                 builder
-                .WithOrigins("http://localhost:4200", "http://192.168.56.102", "http://192.168.56.102:4200", "http://192.168.56.102:5000", "http://192.168.0.229", "http://192.168.0.229:4200", "http://192.168.0.229:5000").AllowCredentials().AllowAnyHeader().AllowAnyMethod()  // For a specific domain
+                .WithOrigins("http://www.eyesonthenet.com").AllowCredentials().AllowAnyHeader().AllowAnyMethod()  // For a specific domain
+            //.WithOrigins("http://www.eyesonthenet.com", "http://localhost:4200", "http://192.168.56.102", "http://192.168.56.102:4200", "http://192.168.56.102:5000", "http://192.168.0.229", "http://192.168.0.229:4200", "http://192.168.0.229:5000").AllowCredentials().AllowAnyHeader().AllowAnyMethod()  // For a specific domain
             //.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()  // This works but opens the whole thing up!
             //builder.AllowAnyOrigin().WithMethods("GET", "OPTIONS")
             );
