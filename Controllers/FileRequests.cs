@@ -10,6 +10,8 @@ namespace EyesOnTheNet.Controllers
 {
     public class FileRequests
     {
+        private string savedPhotoFilePath = "/eotn-images/"; 
+
         public FileRequests(string sentUserName)
         {
             userName = sentUserName;
@@ -33,7 +35,7 @@ namespace EyesOnTheNet.Controllers
             long currentDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             string newFileName = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
-            string newSavePath = $"/home/banderso/NSS_Backend/eyesonthenet/images/";
+            string newSavePath = savedPhotoFilePath;
             File.WriteAllBytes($"{newSavePath}{newFileName}", singleCameraPicture.data);
 
             Photo currentPhoto = new Photo {
@@ -55,7 +57,7 @@ namespace EyesOnTheNet.Controllers
             string currentFilename = new EyesOnTheNetRepository().ReturnFileName(userName, sentPhotoId);
 
             Picture dvrPhotoPic = new Picture {
-                data = File.ReadAllBytes($"/home/banderso/NSS_Backend/eyesonthenet/images/{currentFilename}"),
+                data = File.ReadAllBytes($"{savedPhotoFilePath}{currentFilename}"),
                 encodeType = "image/jpeg"
             };
 
@@ -68,7 +70,7 @@ namespace EyesOnTheNet.Controllers
 
             if (deletedPhoto != null)
             {
-                File.Delete($"/home/banderso/NSS_Backend/eyesonthenet/images/{deletedPhoto.Filename}");
+                File.Delete($"{savedPhotoFilePath}{deletedPhoto.Filename}");
             }
 
             return deletedPhoto;
