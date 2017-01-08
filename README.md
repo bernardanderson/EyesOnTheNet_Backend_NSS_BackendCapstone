@@ -21,11 +21,13 @@
 
 > This Backend component allows a user access to web camera images via standard HTTP Requests.
 > With this a user can:
-> 1. Generate/Retrieve a Json web token for authentication
-> 1. Manipulate a MySQL Database to store/retrieve/edit a personal list a public/private webcams.
-> 1. Retrieve a single snapshot from one of the user's webcameras.
-> 1. Retrieve a static Google Map image of a physical location for a webcam. 
-> 1. NOTE: All webcam/GoogleMap traffic is done through the Backend API. The user sees none of the actual traffic to the webcameras. 
+> 1. Generate/Retrieve a Json web token for authentication  
+> 2. Manipulate a MySQL Database to store/retrieve/edit a personal list a public/private webcams.  
+> 3. Retrieve a single snapshot from one of the user's webcameras.  
+> 4. Retrieve a static Google Map image of a physical location for a webcam.  
+> 5. Store, retrieve and delete saved camera image information from a MySQL datavase and the actual files from the server  
+> 6. NOTE: All webcam/GoogleMap traffic is done through the Backend API. The user sees none of the actual traffic to the webcameras.  
+
 
 ### How to run:
 ```
