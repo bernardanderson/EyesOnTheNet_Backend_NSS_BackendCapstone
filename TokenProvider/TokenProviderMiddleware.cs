@@ -84,7 +84,7 @@ namespace EyesOnTheNet.TokenProvider
             // This builds a server-side cookie to returning to the browser
             CookieOptions options = new CookieOptions
             {
-                Domain = ".eyesonthenet.com",
+                Domain = "192.168.56.102",
                 Path = "/",
                 HttpOnly = true,
             };
