@@ -73,6 +73,17 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
+        // Get: api/camera/stoprecording
+        // Sends a List of User Cameras to the database to record
+        [HttpGet("api/[controller]/stoprecording")]
+        public IActionResult RecordCamerasPost()
+        {
+            string userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            new BackgroundTasks().StopTask(userName);
+
+            return Ok("Recording Stopped");
+        }
+
         // Post: api/camera/addcamera
         // Sends a List of User Cameras to the database to record
         [HttpPost("api/[controller]/recordcamera")]

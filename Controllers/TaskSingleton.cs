@@ -50,7 +50,7 @@ namespace EyesOnTheNet.Controllers
             return foundUserTask;
         }
 
-        public int RetrieveUserTask()
+        public int RetrieveUserTaskCount()
         {
             return _userCameraTasks.Count;
         }

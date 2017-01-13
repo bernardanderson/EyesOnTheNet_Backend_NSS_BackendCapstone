@@ -10,6 +10,8 @@ namespace EyesOnTheNet.Controllers
 {
     public class BackgroundTasks
     {
+        private TaskSingleton myInstance = TaskSingleton.Instance;
+
         public bool StartCameraRecording(RecordCameras sentRecordCameras)
         {
             // Did the user submit no cameras?
@@ -27,6 +29,8 @@ namespace EyesOnTheNet.Controllers
         {
             EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
 
+            sentRecordCameras.fullRecordingCameras = new List<Camera>();
+
             // Cycles through the cameras the user is trying to record and if they have access it adds it to the 
             //  valid list to be recorded
             for (var i = 0; i < sentRecordCameras.recordingCameras.Count; i++)
@@ -42,7 +46,6 @@ namespace EyesOnTheNet.Controllers
 
         private void InitializeBackgroundTask(RecordCameras sentRecordCameras)
         {
-            TaskSingleton myInstance = TaskSingleton.Instance;
             CancellationTokenSource currentCancellationTokenSource = new CancellationTokenSource();
 
             UserTask currentUserTask = new UserTask()
@@ -56,6 +59,7 @@ namespace EyesOnTheNet.Controllers
             Task userTask = Task.Run(() => MultipleCameraCaptures(currentUserTask, sentRecordCameras), currentCancellationTokenSource.Token);
         }
 
+        // Simply takes photos of cameras 
         private void MultipleCameraCaptures(UserTask sentUserTask, RecordCameras sentRecordCameras)
         {
             while (!sentUserTask.userCancellationTokenSrc.Token.IsCancellationRequested)
@@ -64,8 +68,18 @@ namespace EyesOnTheNet.Controllers
                 {
                     new FileRequests(sentRecordCameras.userName, sentRecordCameras.fullRecordingCameras[i].CameraId).SaveCameraPhoto();
                 }
-
                 Thread.Sleep(sentRecordCameras.recordDelay);
+            }
+        }
+
+        public void StopTask(string sentUserName)
+        {
+            UserTask returnedUserTask = myInstance.StopUserTask(sentUserName);
+
+            if (returnedUserTask != null)
+            {
+                returnedUserTask.userCancellationTokenSrc.Cancel();
+                returnedUserTask.userCancellationTokenSrc.Dispose();
             }
         }
     }
