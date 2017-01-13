@@ -9,10 +9,10 @@ using System.IdentityModel.Tokens.Jwt;
 namespace EyesOnTheNet.Controllers
 {
     // Returns list of Users Cameras
+    [Authorize]
     public class CameraController : Controller
     {
         [HttpGet("api/[controller]")]
-        [Authorize]
         public IEnumerable<SimpleCameraUserAccess> GetListOfUserCameras()
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
@@ -21,7 +21,6 @@ namespace EyesOnTheNet.Controllers
 
         // Retrives the full Camera Data for a single camera so it can be edited
         [HttpGet("api/[controller]/{cameraId:int}/singlecamera")]
-        [Authorize]
         public IActionResult GetFullSingleCamerasData(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
@@ -39,27 +38,23 @@ namespace EyesOnTheNet.Controllers
         // GET: api/camera/5/snapshot
         // Pulls an image from a single camera (based on it's table ID) for display
         [HttpGet("api/[controller]/{cameraId:int}/snapshot")]
-        [Authorize]
         public async Task<ActionResult> GetSingleCameraImage(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
             Camera returnedUserCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
 
-            if (returnedUserCamera != null)
+            if (returnedUserCamera == null)
             {
-                Picture cameraPicture = await new CameraRequests().GetSnapshot(returnedUserCamera);
-                return File(cameraPicture.data, cameraPicture.encodeType);
-            } else
-            {
-                Picture cameraPicture = await new CameraRequests().GetSnapshot(new Camera { Type = -1 });
-                return File(cameraPicture.data, cameraPicture.encodeType);
+                returnedUserCamera = new Camera { Type = -1 }; 
             }
+
+            Picture cameraPicture = await new CameraRequests().GetSnapshot(returnedUserCamera);
+            return File(cameraPicture.data, cameraPicture.encodeType);
         }
 
         // GET: api/camera/1/7/googlemap
         // Pulls the Google Map for a single camera and it's location
         [HttpGet("api/[controller]/{cameraId:int}/{zoomLevel:int}/googlemap")]
-        [Authorize]
         public async Task<ActionResult> GetGoogleMapsStaticImage(int cameraId, int zoomLevel)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
@@ -78,11 +73,49 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
+        // Get: api/camera/stoprecording
+        // Sends a List of User Cameras to the database to record
+        [HttpGet("api/[controller]/stoprecording")]
+        public IActionResult RecordCamerasPost()
+        {
+            string userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            new BackgroundTasks().StopTask(userName);
+
+            return Ok("Recording Stopped");
+        }
+
+        // Post: api/camera/addcamera
+        // Sends a List of User Cameras to the database to record
+        [HttpPost("api/[controller]/recordcamera")]
+        public IActionResult RecordCamerasPost([FromBody]RecordCameras sentCamerasToRecord)
+        {
+            if (sentCamerasToRecord == null)
+            {
+                return StatusCode(417, "Malformed Camera Data");
+
+            }
+            else if (sentCamerasToRecord.recordDelay * 1000 < 5000)
+            {
+                return StatusCode(417, "Too Small of a Delay");
+            }
+
+            sentCamerasToRecord.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            sentCamerasToRecord.recordDelay = sentCamerasToRecord.recordDelay * 1000; // Convert to ms
+
+            bool isRecording = new BackgroundTasks().StartCameraRecording(sentCamerasToRecord);
+
+            if (isRecording)
+            {
+                return Ok("Recording Started");
+            }
+
+            return StatusCode(417, "Invalid Cameras Present");
+        }
+
         // Post: api/camera/addcamera
         // Posts a new camera to the database
         [HttpPost("api/[controller]/addcamera")]
-        [Authorize]
-        public IActionResult Post([FromBody]Camera sentCamera)
+        public IActionResult AddCamerasToDbPost([FromBody]Camera sentCamera)
         {
             if (sentCamera != null)
             {
@@ -95,6 +128,22 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
+        // DELETE api/camera/5
+        [HttpDelete("api/[controller]/{cameraId:int}")]
+        public IActionResult DeleteCamera(int cameraId)
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            Camera returnedDeletedCamera = new EyesOnTheNetRepository().RemoveCameraFromDatabase(currentUser, cameraId);
+
+            if (returnedDeletedCamera != null)
+            {
+                return Ok(returnedDeletedCamera);
+            } else
+            {
+                return StatusCode(417, "Camera Not Removed");
+            }
+        } 
+               
         // Allows the initial creation and population of the database
         // GET: api/camera/build_database
         // Used for initial database build
@@ -107,22 +156,5 @@ namespace EyesOnTheNet.Controllers
             return Ok("Successful DB Creation");
         }
         */
-
-        // DELETE api/camera/5
-        [HttpDelete("api/[controller]/{cameraId:int}")]
-        [Authorize]
-        public IActionResult DeleteCamera(int cameraId)
-        {
-                string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-                Camera returnedDeletedCamera = new EyesOnTheNetRepository().RemoveCameraFromDatabase(currentUser, cameraId);
-
-            if (returnedDeletedCamera != null)
-            {
-                return Ok(returnedDeletedCamera);
-            } else
-            {
-                return StatusCode(417, "Camera Not Removed");
-            }
-        }        
     }
 }

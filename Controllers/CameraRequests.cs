@@ -12,7 +12,10 @@ namespace EyesOnTheNet.Controllers
     {
         // Using a static method for HttpClient reduces the build up of 'waiting' threads which can severely hinder performance
         //  http://aspnetmonsters.com/2016/08/2016-08-27-httpclientwrong/
-        private static HttpClient Client = new HttpClient();
+        private static HttpClient Client = new HttpClient()
+        {
+            Timeout = new TimeSpan(0, 0, 15) // Timesout after 15 seconds
+        };
 
         // Gets a single image from a selected camera source
         public async Task<Picture> GetSnapshot(Camera sentCamera)
