@@ -74,9 +74,37 @@ namespace EyesOnTheNet.Controllers
         }
 
         // Post: api/camera/addcamera
+        // Sends a List of User Cameras to the database to record
+        [HttpPost("api/[controller]/recordcamera")]
+        public IActionResult RecordCamerasPost([FromBody]RecordCameras sentCamerasToRecord)
+        {
+            if (sentCamerasToRecord == null)
+            {
+                return StatusCode(417, "Malformed Camera Data");
+
+            }
+            else if (sentCamerasToRecord.recordDelay * 1000 < 5000)
+            {
+                return StatusCode(417, "Too Small of a Delay");
+            }
+
+            sentCamerasToRecord.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            sentCamerasToRecord.recordDelay = sentCamerasToRecord.recordDelay * 1000; // Convert to ms
+
+            bool isRecording = new BackgroundTasks().StartCameraRecording(sentCamerasToRecord);
+
+            if (isRecording)
+            {
+                return Ok("Recording Started");
+            }
+
+            return StatusCode(417, "Invalid Cameras Present");
+        }
+
+        // Post: api/camera/addcamera
         // Posts a new camera to the database
         [HttpPost("api/[controller]/addcamera")]
-        public IActionResult Post([FromBody]Camera sentCamera)
+        public IActionResult AddCamerasToDbPost([FromBody]Camera sentCamera)
         {
             if (sentCamera != null)
             {
@@ -89,6 +117,22 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
+        // DELETE api/camera/5
+        [HttpDelete("api/[controller]/{cameraId:int}")]
+        public IActionResult DeleteCamera(int cameraId)
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            Camera returnedDeletedCamera = new EyesOnTheNetRepository().RemoveCameraFromDatabase(currentUser, cameraId);
+
+            if (returnedDeletedCamera != null)
+            {
+                return Ok(returnedDeletedCamera);
+            } else
+            {
+                return StatusCode(417, "Camera Not Removed");
+            }
+        } 
+               
         // Allows the initial creation and population of the database
         // GET: api/camera/build_database
         // Used for initial database build
@@ -101,21 +145,5 @@ namespace EyesOnTheNet.Controllers
             return Ok("Successful DB Creation");
         }
         */
-
-        // DELETE api/camera/5
-        [HttpDelete("api/[controller]/{cameraId:int}")]
-        public IActionResult DeleteCamera(int cameraId)
-        {
-                string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-                Camera returnedDeletedCamera = new EyesOnTheNetRepository().RemoveCameraFromDatabase(currentUser, cameraId);
-
-            if (returnedDeletedCamera != null)
-            {
-                return Ok(returnedDeletedCamera);
-            } else
-            {
-                return StatusCode(417, "Camera Not Removed");
-            }
-        }        
     }
 }
