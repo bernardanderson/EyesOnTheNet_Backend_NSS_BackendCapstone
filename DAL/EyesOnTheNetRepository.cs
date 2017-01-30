@@ -7,16 +7,11 @@ namespace EyesOnTheNet.DAL
 {
     public class EyesOnTheNetRepository
     {
-        public EyesOnTheNetContext Context { get; set; }
+        private EyesOnTheNetContext Context { get; set; }
 
-        public EyesOnTheNetRepository()
+        public EyesOnTheNetRepository(EyesOnTheNetContext _context)
         {
-            Context = new EyesOnTheNetContext();
-
-            // The following checks to see if the database exists.  If not, this makes it and returns 'true'.
-            //  If the Db exists, this does nothing and returns false. I'm not using regular migrations since I'm
-            //  attaching to a stand-alone MySQL server. 
-            Context.Database.EnsureCreated();
+            Context = _context;
         }
 
         // Adds a User to the Db
