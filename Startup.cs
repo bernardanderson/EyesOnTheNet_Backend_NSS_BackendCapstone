@@ -10,6 +10,8 @@ using Microsoft.Extensions.Options;
 using EyesOnTheNet.Private;
 using EyesOnTheNet.TokenProvider;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using EyesOnTheNet.DAL;
 
 namespace EyesOnTheNet
 {
@@ -32,6 +34,13 @@ namespace EyesOnTheNet
         {
             // Add framework services.
             services.AddMvc();
+
+            // Needed to DI the Context into Controllers
+            services.AddDbContext<EyesOnTheNetContext>(options =>
+                options.UseMySql(PrivateParameters.MySQLParameterString)); //Requires access to the private MySQL conntection string
+                                           
+            // Needed to allow the Respository access the DI'd DbContext
+            services.AddScoped<EyesOnTheNetRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
