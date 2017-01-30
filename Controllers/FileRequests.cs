@@ -1,5 +1,6 @@
 ﻿using EyesOnTheNet.DAL;
 using EyesOnTheNet.Models;
+using EyesOnTheNet.Private;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,32 +11,31 @@ namespace EyesOnTheNet.Controllers
 {
     public class FileRequests
     {
-        private string savedPhotoFilePath = "/eotn-images/"; 
-
-        public FileRequests(string sentUserName)
-        {
-            userName = sentUserName;
-        }
-
-        public FileRequests(string sentUserName, int sentCameraId)
-        {
-            userName = sentUserName;
-            userCamera = new EyesOnTheNetRepository().CanAccessThisCamera(sentUserName, sentCameraId);
-        }
-
+        private EyesOnTheNetRepository newRepo;
         private string userName { get; set; }
         private Camera userCamera { get; set; }
+        public FileRequests(EyesOnTheNetRepository repo, string sentUserName)
+        {
+            userName = sentUserName;
+            newRepo = repo;
+        }
+
+        public FileRequests(EyesOnTheNetRepository repo, string sentUserName, int sentCameraId)
+        {
+            userName = sentUserName;
+            userCamera = newRepo.CanAccessThisCamera(sentUserName, sentCameraId);
+        }
+
 
         // This is for saving a single camera snapshot as a file and in the DB
         public async void SaveCameraPhoto()
         {
             CameraRequests myCameraRequest = new CameraRequests();
             Picture singleCameraPicture = await myCameraRequest.GetSnapshot(userCamera);
-            EyesOnTheNetRepository newEOTN = new EyesOnTheNetRepository();
             long currentDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             string newFileName = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
-            string newSavePath = savedPhotoFilePath;
+            string newSavePath = PrivateParameters.savedPhotoFilePath;
             File.WriteAllBytes($"{newSavePath}{newFileName}", singleCameraPicture.data);
 
             Photo currentPhoto = new Photo {
@@ -43,36 +43,33 @@ namespace EyesOnTheNet.Controllers
                 Filename = newFileName,
                 CreationDate = currentDateTime,
             };
-
-            newEOTN.AddFilesToDatabase(userName, userCamera.CameraId, currentPhoto);
+            newRepo.AddFilesToDatabase(userName, userCamera.CameraId, currentPhoto);
         }
 
         public List<SimplePhoto> SendPhotoList()
         {
-            return new EyesOnTheNetRepository().GetUserPhotoList(userName);
+            return newRepo.GetUserPhotoList(userName);
         }
 
         public Picture GetDvrPhoto(int sentPhotoId)
         {
-            string currentFilename = new EyesOnTheNetRepository().ReturnFileName(userName, sentPhotoId);
+            string currentFilename = newRepo.ReturnFileName(userName, sentPhotoId);
 
             Picture dvrPhotoPic = new Picture {
-                data = File.ReadAllBytes($"{savedPhotoFilePath}{currentFilename}"),
+                data = File.ReadAllBytes($"{PrivateParameters.savedPhotoFilePath}{currentFilename}"),
                 encodeType = "image/jpeg"
             };
-
             return dvrPhotoPic;
         }
 
         public Photo DeleteSinglePhoto(int sentPhotoId)
         {
-            Photo deletedPhoto = new EyesOnTheNetRepository().RemoveCameraPhotoFromDatabase(userName, sentPhotoId);
+            Photo deletedPhoto = newRepo.RemoveCameraPhotoFromDatabase(userName, sentPhotoId);
 
             if (deletedPhoto != null)
             {
-                File.Delete($"{savedPhotoFilePath}{deletedPhoto.Filename}");
+                File.Delete($"{PrivateParameters.savedPhotoFilePath}{deletedPhoto.Filename}");
             }
-
             return deletedPhoto;
         }
 

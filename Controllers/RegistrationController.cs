@@ -13,12 +13,17 @@ namespace EyesOnTheNet.Controllers
     [Route("api/[controller]")]
     public class RegistrationController : Controller
     {
+        private EyesOnTheNetRepository newRepo;
+        public RegistrationController(EyesOnTheNetRepository repo)
+        {
+            newRepo = repo;
+        }
+
         // POST api/values
         [HttpPost]
         public IActionResult Post([FromBody]User sentUser)
         {
-            EyesOnTheNetRepository context = new EyesOnTheNetRepository();
-            KeyValuePair<bool, string> registrationResult = context.RegisterUser(sentUser);
+            KeyValuePair<bool, string> registrationResult = newRepo.RegisterUser(sentUser);
 
             if (registrationResult.Key)
             {

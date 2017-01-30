@@ -13,13 +13,16 @@ namespace EyesOnTheNet.Controllers
     public class BackgroundTasks
     {
         private TaskSingleton myInstance = TaskSingleton.Instance;
-
+        private EyesOnTheNetRepository newRepo;
+        public BackgroundTasks(EyesOnTheNetRepository repo)
+        {
+            newRepo = repo;
+        }
         //Gets the full camera data and intializes the recording
         public bool StartCameraRecording(RecordCamera sentRecordCamera)
         {
-            EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
             sentRecordCamera.fullRecordingCamera = new Camera();
-            sentRecordCamera.fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentRecordCamera.userName, sentRecordCamera.recordingCameraId);
+            sentRecordCamera.fullRecordingCamera = newRepo.CanAccessThisCamera(sentRecordCamera.userName, sentRecordCamera.recordingCameraId);
 
             if (sentRecordCamera.fullRecordingCamera == null)
             {
@@ -54,9 +57,8 @@ namespace EyesOnTheNet.Controllers
         {
             if (sentAlreadyRecordingCamera != null && needToFindCamera)
             {
-                EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
                 sentAlreadyRecordingCamera.fullRecordingCamera = new Camera();
-                sentAlreadyRecordingCamera.fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentAlreadyRecordingCamera.userName, sentAlreadyRecordingCamera.recordingCameraId);
+                sentAlreadyRecordingCamera.fullRecordingCamera = newRepo.CanAccessThisCamera(sentAlreadyRecordingCamera.userName, sentAlreadyRecordingCamera.recordingCameraId);
             }
 
             RecordCamera foundRecordCamera = myInstance.CheckCameraRecordTask(sentAlreadyRecordingCamera);
