@@ -48,7 +48,7 @@ namespace EyesOnTheNet
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, EyesOnTheNetContext context)
         {
             ///// Start of JWT Middleware
             SymmetricSecurityKey signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(PrivateParameters.JWTSecretKey)); // JWTSecretKey is Private and known to the server ONLY
@@ -121,6 +121,7 @@ namespace EyesOnTheNet
                   name: "default",
                   template: "{controller=Home}/{action=Index}/{id?}");
             });
+            DbInitializer.Initialize(context);
         }
     }
 }
