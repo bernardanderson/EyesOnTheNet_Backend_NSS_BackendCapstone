@@ -12,11 +12,17 @@ namespace EyesOnTheNet.Controllers
     [Authorize]
     public class CameraController : Controller
     {
+        private EyesOnTheNetRepository newRepo;
+        public CameraController(EyesOnTheNetRepository repo)
+        {
+            newRepo = repo;
+        }
+
         [HttpGet("api/[controller]")]
         public IEnumerable<SimpleCameraUserAccess> GetListOfUserCameras()
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            return new EyesOnTheNetRepository().ReturnUserCameras(currentUser);
+            return newRepo.ReturnUserCameras(currentUser);
         }
 
         // Retrives the full Camera Data for a single camera so it can be edited
@@ -24,7 +30,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult GetFullSingleCamerasData(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Camera returnedCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
+            Camera returnedCamera = newRepo.CanAccessThisCamera(currentUser, cameraId);
 
             if (returnedCamera != null)
             {
@@ -41,7 +47,7 @@ namespace EyesOnTheNet.Controllers
         public async Task<ActionResult> GetSingleCameraImage(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Camera returnedUserCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
+            Camera returnedUserCamera = newRepo.CanAccessThisCamera(currentUser, cameraId);
 
             if (returnedUserCamera == null)
             {
@@ -58,7 +64,7 @@ namespace EyesOnTheNet.Controllers
         public async Task<ActionResult> GetGoogleMapsStaticImage(int cameraId, int zoomLevel)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Camera returnedUserCamera = new EyesOnTheNetRepository().CanAccessThisCamera(currentUser, cameraId);
+            Camera returnedUserCamera = newRepo.CanAccessThisCamera(currentUser, cameraId);
 
             if (returnedUserCamera != null)
             {
@@ -133,7 +139,7 @@ namespace EyesOnTheNet.Controllers
             if (sentCamera != null)
             {
                 string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-                SimpleCameraUserAccess returnedSimpleUserCamera = new EyesOnTheNetRepository().AddCameraToDatabaseProcess(sentCamera, currentUser);
+                SimpleCameraUserAccess returnedSimpleUserCamera = newRepo.AddCameraToDatabaseProcess(sentCamera, currentUser);
                 return Ok(returnedSimpleUserCamera);
             } else
             {
@@ -146,7 +152,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult DeleteCamera(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Camera returnedDeletedCamera = new EyesOnTheNetRepository().RemoveCameraFromDatabase(currentUser, cameraId);
+            Camera returnedDeletedCamera = newRepo.RemoveCameraFromDatabase(currentUser, cameraId);
 
             if (returnedDeletedCamera != null)
             {

@@ -8,7 +8,6 @@ namespace EyesOnTheNet.DAL
     public class EyesOnTheNetRepository
     {
         private EyesOnTheNetContext Context { get; set; }
-
         public EyesOnTheNetRepository(EyesOnTheNetContext _context)
         {
             Context = _context;
