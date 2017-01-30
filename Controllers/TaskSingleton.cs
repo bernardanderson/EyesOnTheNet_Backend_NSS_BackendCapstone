@@ -1,8 +1,6 @@
 ﻿using EyesOnTheNet.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 // The singleton pattern allows the creatation of a single instance of class and then the passing of that one instance to anything 
 //  else that looks to "instantiate" it. Singletons allow info to be stored in-memory and accessed by subsequent actions without loss
@@ -14,7 +12,7 @@ namespace EyesOnTheNet.Controllers
     {
         // Holds Tasks (userName and Cancellation Token) created when a user chooses to start a background Thread
         //  to record video streams 
-        private List<UserTask> _userCameraTasks { get; set; } = new List<UserTask>();
+        private List<RecordCamera> _userCameraTasks { get; set; } = new List<RecordCamera>();
 
         private TaskSingleton()
         {
@@ -33,26 +31,29 @@ namespace EyesOnTheNet.Controllers
             internal static readonly TaskSingleton instance = new TaskSingleton();
         }
 
-        public void AddUserTask(UserTask sentUserTask)
+        //Adds a camera to the singleton list for later retrieval
+        public void AddRecordCameraTask(RecordCamera sentRecordCamera)
         {
-            _userCameraTasks.Add(sentUserTask);
+            _userCameraTasks.Add(sentRecordCamera);
         }
 
-        public UserTask StopUserTask(string sentUserName)
+        //Checks to see if a user is already recording a specific camera
+        public RecordCamera CheckCameraRecordTask(RecordCamera sentRecordCamera)
         {
-            UserTask foundUserTask = _userCameraTasks.FirstOrDefault(ut => ut.userName == sentUserName);
-
-            if (foundUserTask != null)
-            {
-                _userCameraTasks.Remove(foundUserTask);
-            }
-
-            return foundUserTask;
+            RecordCamera foundRecordingCameraTask = _userCameraTasks.Where(ut => ut.userName == sentRecordCamera.userName).FirstOrDefault(ut => ut.recordingCameraId == sentRecordCamera.recordingCameraId);
+            return foundRecordingCameraTask;
         }
 
-        public int RetrieveUserTaskCount()
+        //Removes a camera from the singleton list as it is being removed
+        public void RemoveUserTask(RecordCamera sentRecordCamera)
         {
-            return _userCameraTasks.Count;
+            _userCameraTasks.Remove(sentRecordCamera);
+        }
+
+        //Retrieves a list of cameras being recorded by the user
+        public List<RecordCamera> RetrieveUserTasks(string sentUserName)
+        {
+            return _userCameraTasks.Where(ut => ut.userName == sentUserName).ToList();
         }
     }
 }

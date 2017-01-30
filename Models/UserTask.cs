@@ -9,6 +9,7 @@ namespace EyesOnTheNet.Models
     public class UserTask
     {
         public string userName { get; set; }
+        public Camera recordingCamera { get; set; }
         public CancellationTokenSource userCancellationTokenSrc { get; set; }
     }
 }
