@@ -14,9 +14,11 @@ namespace EyesOnTheNet.Controllers
     {
         private TaskSingleton myInstance = TaskSingleton.Instance;
         private EyesOnTheNetRepository newRepo;
-        public BackgroundTasks(EyesOnTheNetRepository repo)
+        private FileRequests newFileRequest;
+        public BackgroundTasks(EyesOnTheNetRepository repo, FileRequests _fileRequest)
         {
             newRepo = repo;
+            newFileRequest = _fileRequest;
         }
         //Gets the full camera data and intializes the recording
         public bool StartCameraRecording(RecordCamera sentRecordCamera)
@@ -47,7 +49,7 @@ namespace EyesOnTheNet.Controllers
         {
             while (!sentUserTask.userCancellationTokenSrc.Token.IsCancellationRequested)
             {
-                new FileRequests(sentUserTask.userName, sentUserTask.fullRecordingCamera.CameraId).SaveCameraPhoto();
+                newFileRequest.SaveCameraPhoto(sentUserTask.userName, sentUserTask.fullRecordingCamera.CameraId);
                 Thread.Sleep(sentUserTask.recordDelay);
             }
         }

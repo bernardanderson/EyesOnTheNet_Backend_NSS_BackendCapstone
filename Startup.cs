@@ -12,6 +12,7 @@ using EyesOnTheNet.TokenProvider;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using EyesOnTheNet.DAL;
+using EyesOnTheNet.Controllers;
 
 namespace EyesOnTheNet
 {
@@ -41,6 +42,9 @@ namespace EyesOnTheNet
                                            
             // Needed to allow the Respository access the DI'd DbContext
             services.AddScoped<EyesOnTheNetRepository>();
+            services.AddScoped<FileRequests>();
+            services.AddScoped<BackgroundTasks>();
+            services.AddScoped<TokenProviderMiddleware>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

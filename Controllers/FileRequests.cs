@@ -12,26 +12,18 @@ namespace EyesOnTheNet.Controllers
     public class FileRequests
     {
         private EyesOnTheNetRepository newRepo;
-        private string userName { get; set; }
-        private Camera userCamera { get; set; }
-        public FileRequests(EyesOnTheNetRepository repo, string sentUserName)
+        public FileRequests(EyesOnTheNetRepository repo)
         {
-            userName = sentUserName;
             newRepo = repo;
         }
 
-        public FileRequests(EyesOnTheNetRepository repo, string sentUserName, int sentCameraId)
-        {
-            userName = sentUserName;
-            userCamera = newRepo.CanAccessThisCamera(sentUserName, sentCameraId);
-        }
-
-
         // This is for saving a single camera snapshot as a file and in the DB
-        public async void SaveCameraPhoto()
+        public async void SaveCameraPhoto(string sentUserName, int sentCameraId)
         {
+            Camera userCamera = newRepo.CanAccessThisCamera(sentUserName, sentCameraId);
             CameraRequests myCameraRequest = new CameraRequests();
             Picture singleCameraPicture = await myCameraRequest.GetSnapshot(userCamera);
+
             long currentDateTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
             string newFileName = $"{userCamera.CameraId.ToString()}_{currentDateTime.ToString()}.jpg";
@@ -43,17 +35,17 @@ namespace EyesOnTheNet.Controllers
                 Filename = newFileName,
                 CreationDate = currentDateTime,
             };
-            newRepo.AddFilesToDatabase(userName, userCamera.CameraId, currentPhoto);
+            newRepo.AddFilesToDatabase(sentUserName, userCamera.CameraId, currentPhoto);
         }
 
-        public List<SimplePhoto> SendPhotoList()
+        public List<SimplePhoto> SendPhotoList(string sentUserName)
         {
-            return newRepo.GetUserPhotoList(userName);
+            return newRepo.GetUserPhotoList(sentUserName);
         }
 
-        public Picture GetDvrPhoto(int sentPhotoId)
+        public Picture GetDvrPhoto(string sentUserName, int sentPhotoId)
         {
-            string currentFilename = newRepo.ReturnFileName(userName, sentPhotoId);
+            string currentFilename = newRepo.ReturnFileName(sentUserName, sentPhotoId);
 
             Picture dvrPhotoPic = new Picture {
                 data = File.ReadAllBytes($"{PrivateParameters.savedPhotoFilePath}{currentFilename}"),
@@ -62,9 +54,9 @@ namespace EyesOnTheNet.Controllers
             return dvrPhotoPic;
         }
 
-        public Photo DeleteSinglePhoto(int sentPhotoId)
+        public Photo DeleteSinglePhoto(string sentUserName, int sentPhotoId)
         {
-            Photo deletedPhoto = newRepo.RemoveCameraPhotoFromDatabase(userName, sentPhotoId);
+            Photo deletedPhoto = newRepo.RemoveCameraPhotoFromDatabase(sentUserName, sentPhotoId);
 
             if (deletedPhoto != null)
             {

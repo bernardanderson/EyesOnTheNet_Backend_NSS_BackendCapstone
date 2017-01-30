@@ -13,9 +13,11 @@ namespace EyesOnTheNet.Controllers
     public class CameraController : Controller
     {
         private EyesOnTheNetRepository newRepo;
-        public CameraController(EyesOnTheNetRepository repo)
+        private BackgroundTasks newBackrgroundTasks;
+        public CameraController(EyesOnTheNetRepository repo, BackgroundTasks _backgroundTasks)
         {
             newRepo = repo;
+            newBackrgroundTasks = _backgroundTasks;
         }
 
         [HttpGet("api/[controller]")]
@@ -85,7 +87,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult StopRecordingCameraPost([FromBody]RecordCamera sentCameraToStop)
         {
             sentCameraToStop.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            bool cameraStoppedRecording = new BackgroundTasks().StopTask(sentCameraToStop, true);
+            bool cameraStoppedRecording = newBackrgroundTasks.StopTask(sentCameraToStop, true);
 
             if (cameraStoppedRecording)
             {
@@ -114,7 +116,7 @@ namespace EyesOnTheNet.Controllers
             sentCameraToRecord.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
             sentCameraToRecord.recordDelay = sentCameraToRecord.recordDelay * 1000; // Convert to ms
 
-            bool isRecording = new BackgroundTasks().StartCameraRecording(sentCameraToRecord);
+            bool isRecording = newBackrgroundTasks.StartCameraRecording(sentCameraToRecord);
 
             if (isRecording)
             {
@@ -128,7 +130,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult DisplayTasks()
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            return Ok(new BackgroundTasks().ReturnTasks(currentUser));
+            return Ok(newBackrgroundTasks.ReturnTasks(currentUser));
         }
 
         // Post: api/camera/addcamera

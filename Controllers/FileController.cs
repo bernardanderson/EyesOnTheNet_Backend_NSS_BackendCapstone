@@ -11,13 +11,19 @@ namespace EyesOnTheNet.Controllers
 {
     public class FileController : Controller
     {
+        private FileRequests newFileRequest;
+        public FileController(FileRequests _fileRequest)
+        {
+            newFileRequest = _fileRequest;
+        }
+
         // API Access point to save a single camera snapshot to the HD and DB
         [HttpGet("api/[controller]/{cameraId:int}")]
         [Authorize]
         public void SaveSingleCameraPicture(int cameraId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            new FileRequests(currentUser, cameraId).SaveCameraPhoto();
+            newFileRequest.SaveCameraPhoto(currentUser, cameraId);
         }
 
         // API Access point to save a single camera snapshot to the HD and DB
@@ -26,7 +32,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult ReturnRecordedCameraInfo()
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            List<SimplePhoto> returnedPhotoList = new FileRequests(currentUser).SendPhotoList();
+            List<SimplePhoto> returnedPhotoList = newFileRequest.SendPhotoList(currentUser);
 
             if (returnedPhotoList != null)
             {
@@ -44,7 +50,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult ReturnRecordedCameraPictures(int photoId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Picture dvrPicture = new FileRequests(currentUser).GetDvrPhoto(photoId);
+            Picture dvrPicture = newFileRequest.GetDvrPhoto(currentUser, photoId);
 
             if (dvrPicture != null)
             {
@@ -63,7 +69,7 @@ namespace EyesOnTheNet.Controllers
         public IActionResult DeleteCameraPhoto(int photoId)
         {
             string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            Photo returnedDeletedCameraPhoto = new FileRequests(currentUser).DeleteSinglePhoto(photoId);
+            Photo returnedDeletedCameraPhoto = newFileRequest.DeleteSinglePhoto(currentUser, photoId);
 
             if (returnedDeletedCameraPhoto != null)
             {

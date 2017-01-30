@@ -13,13 +13,16 @@ namespace EyesOnTheNet.TokenProvider
     {
         private readonly RequestDelegate _next;
         private readonly TokenProviderOptions _options;
+        private readonly EyesOnTheNetRepository newEyesOnTheNetRepo;
 
         public TokenProviderMiddleware(
+            EyesOnTheNetRepository _eyesOneTheNewRepo,
             RequestDelegate next,
             IOptions<TokenProviderOptions> options)
         {
             _next = next;
             _options = options.Value;
+            newEyesOnTheNetRepo = _eyesOneTheNewRepo;
         }
 
         public Task Invoke(HttpContext context)
@@ -95,10 +98,8 @@ namespace EyesOnTheNet.TokenProvider
 
         private Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
-            EyesOnTheNetRepository EyesUserCheck = new EyesOnTheNetRepository();
-
             // DON'T do this in production, obviously!
-            if ( EyesUserCheck.CheckUserLogin(username, password) )
+            if (newEyesOnTheNetRepo.CheckUserLogin(username, password) )
             {
                 return Task.FromResult(new ClaimsIdentity(new System.Security.Principal.GenericIdentity(username, "Token"), new Claim[] { }));
             }
