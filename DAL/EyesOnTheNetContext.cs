@@ -10,12 +10,12 @@ namespace EyesOnTheNet.DAL
 {
     public class EyesOnTheNetContext : DbContext
     {
+        public EyesOnTheNetContext(DbContextOptions<EyesOnTheNetContext> options) : base(options)
+        {
+        }
+
         public DbSet<User> Users { get; set; }
         public DbSet<Camera> Cameras { get; set; }
         public DbSet<Photo> Photos { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder
-                    .UseMySql(PrivateParameters.MySQLParameterString); //Requires access to the private MySQL conntection string 
     }
 }
