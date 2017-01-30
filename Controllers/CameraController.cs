@@ -74,42 +74,55 @@ namespace EyesOnTheNet.Controllers
         }
 
         // Get: api/camera/stoprecording
-        // Sends a List of User Cameras to the database to record
-        [HttpGet("api/[controller]/stoprecording")]
-        public IActionResult RecordCamerasPost()
+        // Sends a single camera to the database to stop recording
+        [HttpPost("api/[controller]/stoprecording")]
+        public IActionResult StopRecordingCameraPost([FromBody]RecordCamera sentCameraToStop)
         {
-            string userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            new BackgroundTasks().StopTask(userName);
+            sentCameraToStop.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            bool cameraStoppedRecording = new BackgroundTasks().StopTask(sentCameraToStop, true);
 
-            return Ok("Recording Stopped");
+            if (cameraStoppedRecording)
+            {
+                return Ok("Recording Stopped");
+            } else
+            {
+                return StatusCode(417, "No Camera / Camera Not Stopped");
+            }
         }
 
         // Post: api/camera/addcamera
-        // Sends a List of User Cameras to the database to record
+        // Receives a single camera to the database to record
         [HttpPost("api/[controller]/recordcamera")]
-        public IActionResult RecordCamerasPost([FromBody]RecordCameras sentCamerasToRecord)
+        public IActionResult RecordCamerasPost([FromBody]RecordCamera sentCameraToRecord)
         {
-            if (sentCamerasToRecord == null)
+            if (sentCameraToRecord.recordingCameraId <= 0)
             {
                 return StatusCode(417, "Malformed Camera Data");
 
             }
-            else if (sentCamerasToRecord.recordDelay * 1000 < 5000)
+            else if (sentCameraToRecord.recordDelay * 1000 < 5000)
             {
                 return StatusCode(417, "Too Small of a Delay");
             }
 
-            sentCamerasToRecord.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            sentCamerasToRecord.recordDelay = sentCamerasToRecord.recordDelay * 1000; // Convert to ms
+            sentCameraToRecord.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            sentCameraToRecord.recordDelay = sentCameraToRecord.recordDelay * 1000; // Convert to ms
 
-            bool isRecording = new BackgroundTasks().StartCameraRecording(sentCamerasToRecord);
+            bool isRecording = new BackgroundTasks().StartCameraRecording(sentCameraToRecord);
 
             if (isRecording)
             {
                 return Ok("Recording Started");
             }
 
-            return StatusCode(417, "Invalid Cameras Present");
+            return StatusCode(417, "Invalid Camera");
+        }
+
+        [HttpGet("api/[controller]/displaytasks")]
+        public IActionResult DisplayTasks()
+        {
+            string currentUser = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
+            return Ok(new BackgroundTasks().ReturnTasks(currentUser));
         }
 
         // Post: api/camera/addcamera

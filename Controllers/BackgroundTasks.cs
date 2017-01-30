@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EyesOnTheNet.Models;
 using EyesOnTheNet.DAL;
@@ -8,79 +6,75 @@ using System.Threading;
 
 namespace EyesOnTheNet.Controllers
 {
+    /// <summary>
+    /// This is a collection of methods for the background recording of single cameras. These cameras will be recorded server-side
+    ///  on a Background thread
+    /// </summary>
     public class BackgroundTasks
     {
         private TaskSingleton myInstance = TaskSingleton.Instance;
 
-        public bool StartCameraRecording(RecordCameras sentRecordCameras)
-        {
-            // Did the user submit no cameras?
-            if (sentRecordCameras.recordingCameras.Count == 0) { return false; }
-
-            sentRecordCameras = BuildValidCameraList(sentRecordCameras);
-
-            // Did the user submit no accessable cameras?
-            if (sentRecordCameras.fullRecordingCameras.Count == 0 ) { return false; }
-
-            InitializeBackgroundTask(sentRecordCameras);
-            return true;
-        }
-        private RecordCameras BuildValidCameraList(RecordCameras sentRecordCameras)
+        //Gets the full camera data and intializes the recording
+        public bool StartCameraRecording(RecordCamera sentRecordCamera)
         {
             EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
+            sentRecordCamera.fullRecordingCamera = new Camera();
+            sentRecordCamera.fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentRecordCamera.userName, sentRecordCamera.recordingCameraId);
 
-            sentRecordCameras.fullRecordingCameras = new List<Camera>();
-
-            // Cycles through the cameras the user is trying to record and if they have access it adds it to the 
-            //  valid list to be recorded
-            for (var i = 0; i < sentRecordCameras.recordingCameras.Count; i++)
+            if (sentRecordCamera.fullRecordingCamera == null)
             {
-                Camera returnedCamera = tempEOTNR.CanAccessThisCamera(sentRecordCameras.userName, sentRecordCameras.recordingCameras[i]);
-                if (returnedCamera != null)
-                {
-                    sentRecordCameras.fullRecordingCameras.Add(returnedCamera);
-                }
+                return false;
             }
-            return sentRecordCameras;
+            InitializeBackgroundTask(sentRecordCamera);
+            return true;
         }
 
-        private void InitializeBackgroundTask(RecordCameras sentRecordCameras)
+        //Build the cancellationsource, stops the camera from being recorded if its already being recorded
+        // adds the camera to the singleton cameratask list and starts the Background task
+        private void InitializeBackgroundTask(RecordCamera sentRecordCamera)
         {
-            CancellationTokenSource currentCancellationTokenSource = new CancellationTokenSource();
-
-            UserTask currentUserTask = new UserTask()
-            {
-                userName = sentRecordCameras.userName,
-                userCancellationTokenSrc = currentCancellationTokenSource
-            };
-
-            // Adds the Task info to the Singleton for later retrieval, and starts the recording Task
-            myInstance.AddUserTask(currentUserTask);
-            Task userTask = Task.Run(() => MultipleCameraCaptures(currentUserTask, sentRecordCameras), currentCancellationTokenSource.Token);
+            sentRecordCamera.userCancellationTokenSrc = new CancellationTokenSource();
+            StopTask(sentRecordCamera, false);
+            myInstance.AddRecordCameraTask(sentRecordCamera);
+            Task userTask = Task.Run(() => TimedCameraCapture(sentRecordCamera), sentRecordCamera.userCancellationTokenSrc.Token);
         }
 
-        // Simply takes photos of cameras 
-        private void MultipleCameraCaptures(UserTask sentUserTask, RecordCameras sentRecordCameras)
+        // Takes a single camera and records its photo in a background thread 
+        private void TimedCameraCapture(RecordCamera sentUserTask)
         {
             while (!sentUserTask.userCancellationTokenSrc.Token.IsCancellationRequested)
             {
-                for (var i = 0; i < sentRecordCameras.fullRecordingCameras.Count; i++)
-                {
-                    new FileRequests(sentRecordCameras.userName, sentRecordCameras.fullRecordingCameras[i].CameraId).SaveCameraPhoto();
-                }
-                Thread.Sleep(sentRecordCameras.recordDelay);
+                new FileRequests(sentUserTask.userName, sentUserTask.fullRecordingCamera.CameraId).SaveCameraPhoto();
+                Thread.Sleep(sentUserTask.recordDelay);
             }
         }
 
-        public void StopTask(string sentUserName)
+        // Stops a task that is running
+        public bool StopTask(RecordCamera sentAlreadyRecordingCamera, bool needToFindCamera)
         {
-            UserTask returnedUserTask = myInstance.StopUserTask(sentUserName);
-
-            if (returnedUserTask != null)
+            if (sentAlreadyRecordingCamera != null && needToFindCamera)
             {
-                returnedUserTask.userCancellationTokenSrc.Cancel();
-                returnedUserTask.userCancellationTokenSrc.Dispose();
+                EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
+                sentAlreadyRecordingCamera.fullRecordingCamera = new Camera();
+                sentAlreadyRecordingCamera.fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentAlreadyRecordingCamera.userName, sentAlreadyRecordingCamera.recordingCameraId);
             }
+
+            RecordCamera foundRecordCamera = myInstance.CheckCameraRecordTask(sentAlreadyRecordingCamera);
+
+            if (foundRecordCamera != null)
+                {
+                    myInstance.RemoveUserTask(foundRecordCamera);
+                    foundRecordCamera.userCancellationTokenSrc.Cancel();
+                    foundRecordCamera.userCancellationTokenSrc.Dispose();
+                    return true;
+                }
+            return false;
+        }
+        
+        //Gets the current list of user recorded cameras from the singleton
+        public List<RecordCamera> ReturnTasks(string currentUser)
+        {
+            return myInstance.RetrieveUserTasks(currentUser);
         }
     }
 }
