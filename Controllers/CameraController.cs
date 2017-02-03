@@ -112,10 +112,10 @@ namespace EyesOnTheNet.Controllers
 
             if (isRecording)
             {
-                return Ok("Recording Started");
+                return Ok( "{\"Recording Started\": true}");
             }
 
-            return StatusCode(417, "Invalid Camera");
+            return StatusCode(417, "{\"Invalid Camera\": true}");
         }
 
         [HttpGet("api/[controller]/displaytasks")]
