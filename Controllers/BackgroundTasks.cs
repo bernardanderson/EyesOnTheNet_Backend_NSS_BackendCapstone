@@ -18,10 +18,9 @@ namespace EyesOnTheNet.Controllers
         public bool StartCameraRecording(RecordCamera sentRecordCamera)
         {
             EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
-            sentRecordCamera.fullRecordingCamera = new Camera();
-            sentRecordCamera.fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentRecordCamera.userName, sentRecordCamera.recordingCameraId);
+            Camera fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentRecordCamera.userName, sentRecordCamera.recordingCameraId);
 
-            if (sentRecordCamera.fullRecordingCamera == null)
+            if (fullRecordingCamera == null)
             {
                 return false;
             }
@@ -34,7 +33,7 @@ namespace EyesOnTheNet.Controllers
         private void InitializeBackgroundTask(RecordCamera sentRecordCamera)
         {
             sentRecordCamera.userCancellationTokenSrc = new CancellationTokenSource();
-            StopTask(sentRecordCamera, false);
+            StopTask(sentRecordCamera);
             myInstance.AddRecordCameraTask(sentRecordCamera);
             Task userTask = Task.Run(() => TimedCameraCapture(sentRecordCamera), sentRecordCamera.userCancellationTokenSrc.Token);
         }
@@ -44,21 +43,14 @@ namespace EyesOnTheNet.Controllers
         {
             while (!sentUserTask.userCancellationTokenSrc.Token.IsCancellationRequested)
             {
-                new FileRequests(sentUserTask.userName, sentUserTask.fullRecordingCamera.CameraId).SaveCameraPhoto();
+                new FileRequests(sentUserTask.userName, sentUserTask.recordingCameraId).SaveCameraPhoto();
                 Thread.Sleep(sentUserTask.recordDelay);
             }
         }
 
         // Stops a task that is running
-        public bool StopTask(RecordCamera sentAlreadyRecordingCamera, bool needToFindCamera)
+        public bool StopTask(RecordCamera sentAlreadyRecordingCamera)
         {
-            if (sentAlreadyRecordingCamera != null && needToFindCamera)
-            {
-                EyesOnTheNetRepository tempEOTNR = new EyesOnTheNetRepository();
-                sentAlreadyRecordingCamera.fullRecordingCamera = new Camera();
-                sentAlreadyRecordingCamera.fullRecordingCamera = tempEOTNR.CanAccessThisCamera(sentAlreadyRecordingCamera.userName, sentAlreadyRecordingCamera.recordingCameraId);
-            }
-
             RecordCamera foundRecordCamera = myInstance.CheckCameraRecordTask(sentAlreadyRecordingCamera);
 
             if (foundRecordCamera != null)

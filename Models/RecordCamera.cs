@@ -7,7 +7,6 @@ namespace EyesOnTheNet.Models
         public string userName { get; set; }
         public int recordDelay { get; set; }
         public int recordingCameraId { get; set; }
-        public Camera fullRecordingCamera { get; set; }
         public CancellationTokenSource userCancellationTokenSrc { get; set; }
     }
 }

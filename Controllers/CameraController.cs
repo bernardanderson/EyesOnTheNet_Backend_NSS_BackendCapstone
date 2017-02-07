@@ -73,17 +73,22 @@ namespace EyesOnTheNet.Controllers
             }
         }
 
-        // Get: api/camera/stoprecording
+        // Get: api/camera/stoprecording/1
         // Sends a single camera to the database to stop recording
-        [HttpPost("api/[controller]/stoprecording")]
-        public IActionResult StopRecordingCameraPost([FromBody]RecordCamera sentCameraToStop)
+        [HttpGet("api/[controller]/stoprecording/{cameraId:int}")]
+        public IActionResult StopRecordingCameraPost(int cameraId)
         {
-            sentCameraToStop.userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject;
-            bool cameraStoppedRecording = new BackgroundTasks().StopTask(sentCameraToStop, true);
+            RecordCamera stopRecordCamera = new RecordCamera()
+            {
+                userName = new JwtSecurityToken(Request.Cookies["access_token"]).Subject,
+                recordingCameraId = cameraId
+            };
+
+            bool cameraStoppedRecording = new BackgroundTasks().StopTask(stopRecordCamera);
 
             if (cameraStoppedRecording)
             {
-                return Ok("Recording Stopped");
+                return Ok("{'Recording Stopped'}" );
             } else
             {
                 return StatusCode(417, "No Camera / Camera Not Stopped");
@@ -112,10 +117,10 @@ namespace EyesOnTheNet.Controllers
 
             if (isRecording)
             {
-                return Ok("Recording Started");
+                return Ok("{\"Recording\": true }");
             }
 
-            return StatusCode(417, "Invalid Camera");
+            return StatusCode(417, "{\"Recording\": false }");
         }
 
         [HttpGet("api/[controller]/displaytasks")]
